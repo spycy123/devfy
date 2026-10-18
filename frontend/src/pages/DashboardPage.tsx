@@ -423,7 +423,6 @@ export default function DashboardPage() {
             </span>
             <div>
               <strong>{user.name}</strong>
-              <span>@{user.username}</span>
             </div>
           </div>
         </header>
@@ -831,7 +830,6 @@ export default function DashboardPage() {
 
                 <div className="profile-identity">
                   <h3>{user.name}</h3>
-                  <span className="profile-username">@{user.username}</span>
                   <p className="profile-email">{user.email}</p>
                 </div>
               </div>
@@ -888,9 +886,38 @@ export default function DashboardPage() {
         <section className="dashboard-checklist" id="portfolio">
           <h2>Your portfolio</h2>
           <p>
-            Status portofolio: belum dipublikasikan. Fitur halaman publik
-            akan kita bangun setelah dashboard selesai.
+            Portofolio publik lu sudah tersedia. Bagikan link ini agar orang
+            lain bisa melihat profil, skill, dan proyek yang sudah lu buat.
           </p>
+
+          <div className="portfolio-actions">
+            <a
+              className="portfolio-action portfolio-action-primary"
+              href={`/u/${encodeURIComponent(user.username)}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View Portfolio ↗
+            </a>
+
+            <button
+              className="portfolio-action portfolio-action-secondary"
+              type="button"
+              onClick={async () => {
+                const link = `${window.location.origin}/u/${encodeURIComponent(user.username)}`
+
+                try {
+                  await navigator.clipboard.writeText(link)
+                  setMessage('Link portofolio berhasil disalin!')
+                  setError('')
+                } catch {
+                  window.prompt('Salin link portofolio ini:', link)
+                }
+              }}
+            >
+              Copy Portfolio Link
+            </button>
+          </div>
         </section>
 
         <p className="dashboard-footer">DEVFY · YOUR WORK, YOUR STORY</p>
