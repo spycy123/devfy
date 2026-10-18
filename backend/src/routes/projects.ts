@@ -4,28 +4,68 @@ import { authenticateToken, type AuthRequest } from '../middleware/auth'
 
 const router = Router()
 
+const MAX_TITLE_LENGTH = 120
+const MAX_DESCRIPTION_LENGTH = 5000
+const MAX_TECH_STACK_ITEMS = 30
+const MAX_TECH_LENGTH = 50
+const MAX_URL_LENGTH = 2048
+
 router.use(authenticateToken)
 
-function validOptionalUrl(value: unknown): boolean {
-  if (value === undefined || value === null || value === '') return true
-  if (typeof value !== 'string') return false
+function normalizeOptionalUrl(value: unknown):
+  | { valid: true; value: string | null | undefined }
+  | { valid: false } {
+  if (value === undefined) return { valid: true, value: undefined }
+  if (value === null) return { valid: true, value: null }
+  if (typeof value !== 'string') return { valid: false }
+
+  const normalized = value.trim()
+
+  if (!normalized) return { valid: true, value: null }
+  if (normalized.length > MAX_URL_LENGTH) return { valid: false }
 
   try {
-    const parsed = new URL(value)
-    return ['http:', 'https:'].includes(parsed.protocol)
+    const parsed = new URL(normalized)
+
+    if (
+      !['http:', 'https:'].includes(parsed.protocol) ||
+      !parsed.hostname ||
+      /\s/.test(normalized)
+    ) {
+      return { valid: false }
+    }
+
+    return { valid: true, value: normalized }
   } catch {
-    return false
+    return { valid: false }
   }
 }
 
-function validTechStack(value: unknown): value is string[] {
-  return value === undefined ||
-    (Array.isArray(value) &&
-      value.length <= 30 &&
-      value.every(
-        (item: unknown) =>
-          typeof item === 'string' && item.trim().length > 0 && item.length <= 50,
-      ))
+function normalizeTechStack(value: unknown):
+  | { valid: true; value: string[] | undefined }
+  | { valid: false } {
+  if (value === undefined) return { valid: true, value: undefined }
+
+  if (
+    !Array.isArray(value) ||
+    value.length > MAX_TECH_STACK_ITEMS ||
+    !value.every(
+      (item: unknown) =>
+        typeof item === 'string' && item.trim().length <= MAX_TECH_LENGTH,
+    )
+  ) {
+    return { valid: false }
+  }
+
+  const normalized = [
+    ...new Set(
+      value
+        .map((item: string) => item.trim())
+        .filter(Boolean),
+    ),
+  ]
+
+  return { valid: true, value: normalized }
 }
 
 router.get('/', async (req: AuthRequest, res) => {
@@ -44,28 +84,35 @@ router.get('/', async (req: AuthRequest, res) => {
 
 router.post('/', async (req: AuthRequest, res) => {
   try {
-    const { title, description, techStack, repositoryUrl, demoUrl } = req.body ?? {}
+    const { title, description, techStack, repositoryUrl, demoUrl } =
+      req.body ?? {}
 
     if (
       typeof title !== 'string' ||
       !title.trim() ||
-      title.trim().length > 120 ||
+      title.trim().length > MAX_TITLE_LENGTH ||
       typeof description !== 'string' ||
       !description.trim() ||
-      description.trim().length > 5000
+      description.trim().length > MAX_DESCRIPTION_LENGTH
     ) {
       return res.status(400).json({
         message: 'Judul (maksimal 120 karakter) dan deskripsi wajib diisi.',
       })
     }
 
-    if (!validTechStack(techStack)) {
-      return res.status(400).json({ message: 'Format tech stack tidak valid.' })
+    const normalizedTechStack = normalizeTechStack(techStack)
+    const normalizedRepositoryUrl = normalizeOptionalUrl(repositoryUrl)
+    const normalizedDemoUrl = normalizeOptionalUrl(demoUrl)
+
+    if (!normalizedTechStack.valid) {
+      return res.status(400).json({
+        message: 'Tech stack maksimal 30 item, masing-masing maksimal 50 karakter.',
+      })
     }
 
-    if (!validOptionalUrl(repositoryUrl) || !validOptionalUrl(demoUrl)) {
+    if (!normalizedRepositoryUrl.valid || !normalizedDemoUrl.valid) {
       return res.status(400).json({
-        message: 'URL repository atau demo harus menggunakan HTTP/HTTPS.',
+        message: 'URL repository atau demo tidak valid. Gunakan HTTP atau HTTPS.',
       })
     }
 
@@ -73,18 +120,17 @@ router.post('/', async (req: AuthRequest, res) => {
       data: {
         title: title.trim(),
         description: description.trim(),
-        techStack: (techStack ?? []).map((item: string) => item.trim()),
-        repositoryUrl: typeof repositoryUrl === 'string' && repositoryUrl.trim()
-          ? repositoryUrl.trim()
-          : null,
-        demoUrl: typeof demoUrl === 'string' && demoUrl.trim()
-          ? demoUrl.trim()
-          : null,
+        techStack: normalizedTechStack.value ?? [],
+        repositoryUrl: normalizedRepositoryUrl.value ?? null,
+        demoUrl: normalizedDemoUrl.value ?? null,
         ownerId: req.userId!,
       },
     })
 
-    return res.status(201).json({ message: 'Proyek berhasil ditambahkan.', project })
+    return res.status(201).json({
+      message: 'Proyek berhasil ditambahkan.',
+      project,
+    })
   } catch (error) {
     console.error('Create project error:', error)
     return res.status(500).json({ message: 'Gagal menambahkan proyek.' })
@@ -93,33 +139,52 @@ router.post('/', async (req: AuthRequest, res) => {
 
 router.patch('/:id', async (req: AuthRequest, res) => {
   try {
-    const { title, description, techStack, repositoryUrl, demoUrl } = req.body ?? {}
+    const { title, description, techStack, repositoryUrl, demoUrl } =
+      req.body ?? {}
 
-    if (title !== undefined &&
-      (typeof title !== 'string' || !title.trim() || title.trim().length > 120)) {
+    if (
+      title !== undefined &&
+      (typeof title !== 'string' ||
+        !title.trim() ||
+        title.trim().length > MAX_TITLE_LENGTH)
+    ) {
       return res.status(400).json({ message: 'Judul tidak valid.' })
     }
 
-    if (description !== undefined &&
-      (typeof description !== 'string' || !description.trim() || description.trim().length > 5000)) {
+    if (
+      description !== undefined &&
+      (typeof description !== 'string' ||
+        !description.trim() ||
+        description.trim().length > MAX_DESCRIPTION_LENGTH)
+    ) {
       return res.status(400).json({ message: 'Deskripsi tidak valid.' })
     }
 
-    if (!validTechStack(techStack)) {
-      return res.status(400).json({ message: 'Format tech stack tidak valid.' })
+    const normalizedTechStack = normalizeTechStack(techStack)
+    const normalizedRepositoryUrl = normalizeOptionalUrl(repositoryUrl)
+    const normalizedDemoUrl = normalizeOptionalUrl(demoUrl)
+
+    if (!normalizedTechStack.valid) {
+      return res.status(400).json({
+        message: 'Tech stack maksimal 30 item, masing-masing maksimal 50 karakter.',
+      })
     }
 
-    if (!validOptionalUrl(repositoryUrl) || !validOptionalUrl(demoUrl)) {
-      return res.status(400).json({ message: 'Format URL tidak valid.' })
+    if (!normalizedRepositoryUrl.valid || !normalizedDemoUrl.valid) {
+      return res.status(400).json({
+        message: 'Format URL tidak valid. Gunakan HTTP atau HTTPS.',
+      })
     }
+
+    const projectId = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : req.params.id
 
     const existing = await prisma.project.findFirst({
       where: {
-  id: Array.isArray(req.params.id)
-    ? req.params.id[0]
-    : req.params.id,
-  ownerId: req.userId,
-},
+        id: projectId,
+        ownerId: req.userId,
+      },
       select: { id: true },
     })
 
@@ -132,23 +197,22 @@ router.patch('/:id', async (req: AuthRequest, res) => {
       data: {
         ...(title !== undefined && { title: title.trim() }),
         ...(description !== undefined && { description: description.trim() }),
-        ...(techStack !== undefined && {
-          techStack: techStack.map((item: string) => item.trim()),
+        ...(normalizedTechStack.value !== undefined && {
+          techStack: normalizedTechStack.value,
         }),
-        ...(repositoryUrl !== undefined && {
-          repositoryUrl: typeof repositoryUrl === 'string' && repositoryUrl.trim()
-            ? repositoryUrl.trim()
-            : null,
+        ...(normalizedRepositoryUrl.value !== undefined && {
+          repositoryUrl: normalizedRepositoryUrl.value,
         }),
-        ...(demoUrl !== undefined && {
-          demoUrl: typeof demoUrl === 'string' && demoUrl.trim()
-            ? demoUrl.trim()
-            : null,
+        ...(normalizedDemoUrl.value !== undefined && {
+          demoUrl: normalizedDemoUrl.value,
         }),
       },
     })
 
-    return res.json({ message: 'Proyek berhasil diperbarui.', project })
+    return res.json({
+      message: 'Proyek berhasil diperbarui.',
+      project,
+    })
   } catch (error) {
     console.error('Update project error:', error)
     return res.status(500).json({ message: 'Gagal memperbarui proyek.' })
@@ -157,13 +221,15 @@ router.patch('/:id', async (req: AuthRequest, res) => {
 
 router.delete('/:id', async (req: AuthRequest, res) => {
   try {
+    const projectId = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : req.params.id
+
     const existing = await prisma.project.findFirst({
       where: {
-  id: Array.isArray(req.params.id)
-    ? req.params.id[0]
-    : req.params.id,
-  ownerId: req.userId,
-},
+        id: projectId,
+        ownerId: req.userId,
+      },
       select: { id: true },
     })
 

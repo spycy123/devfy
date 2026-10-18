@@ -2,6 +2,7 @@ import { Router } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../prisma'
+import { loginRateLimit, registerRateLimit } from '../middleware/authRateLimit'
 
 const router = Router()
 
@@ -12,10 +13,10 @@ function createToken(userId: string) {
     throw new Error('JWT_SECRET belum dikonfigurasi')
   }
 
-  return jwt.sign({ userId }, secret, { expiresIn: '1d' })
+  return jwt.sign({ userId }, secret, { algorithm: 'HS256', expiresIn: '1d' })
 }
 
-router.post('/register', async (req, res) => {
+router.post('/register', registerRateLimit, async (req, res) => {
   try {
     const { name, username, email, password } = req.body ?? {}
 
@@ -105,7 +106,7 @@ router.post('/register', async (req, res) => {
   }
 })
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginRateLimit, async (req, res) => {
   try {
     const { email, password } = req.body ?? {}
 

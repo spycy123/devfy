@@ -173,6 +173,17 @@ router.patch('/', async (req: AuthRequest, res) => {
       user,
     })
   } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'P2025'
+    ) {
+      return res.status(404).json({
+        message: 'Pengguna tidak ditemukan.',
+      })
+    }
+
     console.error('Update profile error:', error)
     return res.status(500).json({
       message: 'Gagal memperbarui profil.',

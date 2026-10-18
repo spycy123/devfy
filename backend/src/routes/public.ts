@@ -7,9 +7,9 @@ router.get('/:username', async (req, res) => {
   try {
     const username = String(req.params.username ?? '').trim()
 
-    if (!username) {
+    if (!/^[a-z0-9_]{3,30}$/.test(username)) {
       return res.status(400).json({
-        message: 'Username wajib diisi.',
+        message: 'Format username tidak valid.',
       })
     }
 

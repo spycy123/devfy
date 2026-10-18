@@ -31,7 +31,7 @@ export function authenticateToken(
   }
 
   try {
-    const payload = jwt.verify(token, secret)
+    const payload = jwt.verify(token, secret, { algorithms: ['HS256'] })
 
     if (
       typeof payload !== 'object' ||
