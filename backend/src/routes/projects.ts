@@ -214,6 +214,14 @@ router.patch('/:id', async (req: AuthRequest, res) => {
       project,
     })
   } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: string }).code === 'P2025'
+    ) {
+      return res.status(404).json({ message: 'Proyek tidak ditemukan.' })
+    }
     console.error('Update project error:', error)
     return res.status(500).json({ message: 'Gagal memperbarui proyek.' })
   }
@@ -241,6 +249,14 @@ router.delete('/:id', async (req: AuthRequest, res) => {
 
     return res.json({ message: 'Proyek berhasil dihapus.' })
   } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: string }).code === 'P2025'
+    ) {
+      return res.status(404).json({ message: 'Proyek tidak ditemukan.' })
+    }
     console.error('Delete project error:', error)
     return res.status(500).json({ message: 'Gagal menghapus proyek.' })
   }

@@ -2,4 +2,14 @@ node_modules
 # Keep environment variables out of version control
 .env
 
+# Build artifacts that must not be committed (tsc output belongs to dist/)
+/dist
+/src/**/*.js
+/src/**/*.js.map
+/src/**/*.d.ts
+/prisma.config.js
+/prisma.config.d.ts
+/prisma.config.d.ts.map
+/prisma.config.js.map
+
 /generated/prisma

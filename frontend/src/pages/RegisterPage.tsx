@@ -1,8 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Code2 } from 'lucide-react'
-
-const API_URL = 'http://localhost:5000/api'
+import { API_URL } from '../lib/api'
 
 export default function RegisterPage() {
   const navigate = useNavigate()

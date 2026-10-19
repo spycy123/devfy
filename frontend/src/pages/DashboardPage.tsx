@@ -17,8 +17,7 @@ import {
   Save,
   Pencil,
 } from 'lucide-react'
-
-const API_URL = 'http://localhost:5000/api'
+import { API_URL } from '../lib/api'
 
 interface UserProfile {
   id: string
@@ -478,9 +477,9 @@ export default function DashboardPage() {
           <article className="dashboard-stat">
             <span className="dashboard-stat-icon"><Globe size={18} /></span>
             <p>PORTFOLIO</p>
-            <h3>Not published</h3>
+            <h3>Live</h3>
             <span className="dashboard-stat-note">
-              Fitur publikasi akan dibuat berikutnya
+              Portofolio publik aktif di /u/{user.username}
             </span>
           </article>
         </section>
