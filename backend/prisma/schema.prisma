@@ -8,34 +8,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           String   @id @default(cuid())
-  name         String
-  username     String   @unique
-  email        String   @unique
-  passwordHash String
-  bio          String?  @db.Text
-  skills       String[] @default([])
-  githubUrl    String?
-  websiteUrl   String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+enum GlobalRole {
+  DEVELOPER
+  PLATFORM_ADMIN
+}
 
-  projects Project[]
+model User {
+  id                 String     @id @default(cuid())
+  name               String
+  username           String     @unique
+  email              String     @unique
+  passwordHash       String
+  globalRole         GlobalRole @default(DEVELOPER)
+  tokenVersion       Int        @default(0)
+  bio                String?    @db.Text
+  skills             String[]   @default([])
+  avatarUrl          String?
+  location           String?
+  githubUrl          String?
+  linkedinUrl        String?
+  websiteUrl         String?
+  portfolioPublished Boolean    @default(false)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  projects            Project[]
+  passwordResetTokens PasswordResetToken[]
+  adminAuditLogs      AuditLog[]
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
 }
 
 model Project {
-  id            String   @id @default(cuid())
-  title         String
-  description   String   @db.Text
-  techStack     String[] @default([])
-  repositoryUrl String?
-  demoUrl       String?
-  ownerId       String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id               String        @id @default(cuid())
+  title            String
+  slug             String
+  description      String        @db.Text
+  techStack        String[]      @default([])
+  thumbnailUrl     String?
+  repositoryUrl    String?
+  demoUrl          String?
+  status           ProjectStatus @default(DRAFT)
+  moderationHidden Boolean       @default(false)
+  ownerId          String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  @@index([ownerId])
+  @@unique([ownerId, slug])
+  @@index([ownerId, status])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  targetId  String
+  createdAt DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([actorId, createdAt])
+  @@index([targetId, createdAt])
 }

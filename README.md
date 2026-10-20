@@ -22,11 +22,15 @@ DATABASE_URL=postgresql://user:password@localhost:5432/devfy_db
 JWT_SECRET=ganti-secret-min-32-char-random
 PORT=5000
 FRONTEND_URL=http://localhost:5173
+RESEND_API_KEY=
+EMAIL_FROM=Devfy <onboarding@resend.dev>
 ```
 
 ### Frontend (`frontend/.env.example`)
 ```
 VITE_API_URL=http://localhost:5000/api
+VITE_CLOUDINARY_CLOUD_NAME=
+VITE_CLOUDINARY_UPLOAD_PRESET=
 ```
 Frontend membaca `VITE_API_URL`; jika tidak diset, fallback ke `http://localhost:5000/api`. **Jangan hardcode localhost untuk production.**
 
@@ -48,11 +52,11 @@ cd ../frontend && npm install
 # 2. env
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
-# lalu isi DATABASE_URL, JWT_SECRET, FRONTEND_URL, VITE_API_URL
+# lalu isi DATABASE_URL, JWT_SECRET, dan VITE_API_URL
 
 # 3. migrasi + generate client
 cd backend
-npx prisma migrate dev   # atau: npx prisma migrate deploy untuk production
+npx prisma migrate dev
 npx prisma generate
 
 # 4. jalankan dev server
@@ -61,6 +65,22 @@ npm run dev   # backend di http://localhost:5000  (dev: tsx watch)
 cd frontend && npm run dev   # http://localhost:5173
 ```
 
+### Konfigurasi email dan upload gambar
+
+1. Buat akun Resend, tambahkan domain pengirim, lalu ikuti instruksi DNS yang ditampilkan Resend. Setelah domain terverifikasi, buat API key.
+2. Isi `RESEND_API_KEY` dan `EMAIL_FROM` (contoh `Devfy <no-reply@domainmu.com>`) di `backend/.env`, lalu restart backend. Reset password belum aktif sampai provider siap.
+3. Buat akun Cloudinary, buka **Settings → Upload → Upload presets**, lalu buat preset unsigned khusus Devfy.
+4. Batasi preset Cloudinary ke JPG/PNG/WebP dan maksimum 5 MB. Isi `VITE_CLOUDINARY_CLOUD_NAME` dan `VITE_CLOUDINARY_UPLOAD_PRESET` di `frontend/.env`, lalu restart frontend. Jangan pernah meletakkan API secret Cloudinary di frontend.
+5. Pengguna juga bisa menempel URL foto/thumbnail sebagai alternatif upload.
+
+- Akun dan proyek baru default privat: project berstatus `DRAFT`, portfolio belum dipublikasikan. Publish project dahulu, lalu publish portfolio.
+- Registrasi publik selalu membuat role `DEVELOPER`. `PLATFORM_ADMIN` hanya bisa diberikan langsung di database kepada akun tepercaya; aksi hide/restore admin dicatat ke `AuditLog`. Contoh setelah login sebagai akun admin yang sudah dibuat:
+  ```sql
+  UPDATE "User"
+  SET "globalRole" = 'PLATFORM_ADMIN'
+  WHERE "email" = 'akun-admin@example.com';
+  ```
+
 - `backend/src/app.ts` diekspor untuk testing/integrasi; `backend/src/index.ts` menjalankan `app.listen`.
 - `frontend/src/lib/api.ts` adalah satu-satunya tempat `VITE_API_URL` dibaca — 4 halaman (Login, Register, Dashboard, PublicPortfolio) mengimpor dari sana.
 
@@ -68,29 +88,35 @@ cd frontend && npm run dev   # http://localhost:5173
 ```bash
 cd backend && npm run build          # tsc → dist/
 cd frontend && npm run build         # tsc -b && vite build → dist/
-cd backend && npm test               # 28 tests (tanpa DB) lulus via vitest+supertest
+cd backend && npm test               # unit/API tests; live integration dilaporkan skipped secara default
 cd backend && npm run db:check       # DB_REACHABLE / DB_UNREACHABLE (tanpa bocor kredensial)
 cd backend && npx prisma validate    # schema valid
 cd backend && npm run db:status      # butuh DB reachable
 ```
 
-**Catatan:** `postinstall` backend otomatis menjalankan `prisma generate` (supaya `@prisma/client` siap di hosting). Tanpa Postgres lokal, `npm test` tetap lulus (28 tests) — suite `integration.live` memanggil `return` lebih awal (no-op) saat DB tidak terjangkau. Detail & batasan: lihat `DEPLOYMENT.md`.
+Untuk menjalankan tes integrasi yang benar-benar menulis ke database lokal, pastikan database dapat dijangkau lalu jalankan `npm test -- integration.live.api.test.ts` dengan `RUN_LIVE_INTEGRATION=1`. Tes membuat akun unik dan membersihkan hanya akun yang dibuatnya.
+
+**Catatan:** `postinstall` backend otomatis menjalankan `prisma generate` (supaya `@prisma/client` siap di hosting). Tanpa Postgres lokal, tes integrasi dilewati secara eksplisit, bukan dihitung sebagai tes lulus. Build frontend production mewajibkan `VITE_API_URL`; jangan mengandalkan URL localhost sebagai fallback production. Detail & batasan: lihat `DEPLOYMENT.md`.
 
 ## Endpoint ringkas
 - `POST /api/auth/register` — rate limit 5/jam
 - `POST /api/auth/login` — rate limit 10/15 menit
+- `POST /api/auth/password/forgot` dan `/api/auth/password/reset` — email Resend, token sekali pakai disimpan sebagai hash
 - `GET/PATCH /api/profile` — butuh Bearer token
 - `GET/POST /api/projects`, `PATCH/DELETE /api/projects/:id` — butuh token, cek kepemilikan, P2025 → 404 (race-safe)
-- `GET /api/public/:username` — publik, hanya field aman (tanpa email/passwordHash)
+- `POST /api/admin/projects/:id/hide|restore` — khusus platform admin, dicatat di AuditLog
+- `GET /api/public/:username` dan `/api/public/:username/projects/:slug` — hanya portfolio aktif dan project published
 - `GET /api/health` — ping DB, 200/500
 - `/* /api yang tak dikenal → 404 JSON`
 
-## Fitur yang sudah siap (MVP)
-- Landing page, login/register dengan validasi, dashboard terhubung backend (fetch nyata, bukan mock)
-- Profil: name/bio/skills/githubUrl/websiteUrl dengan validasi (URL http/https, length, skills deduplicated)
-- Proyek: CRUD penuh dengan ownership check, batas title 120, desc 5000, techStack 30×50, URL validasi
-- Portofolio publik: data actual dari DB, empty/loading/error states, responsive
+## Fitur MVP
+- Registrasi, login, logout, validasi, rate limiting, serta pemulihan password via email
+- Profil: nama, username unik, foto, bio, lokasi, skills, GitHub, LinkedIn, dan website
+- Project CRUD dengan ownership check, thumbnail, slug, status draft/published, demo dan repository
+- Dashboard dengan preview/status publikasi; portfolio publik responsif hanya menampilkan konten yang diterbitkan
+- Moderasi project khusus platform admin dengan audit log
 - JWT HS256 exp 1d, bcrypt hash cost 12, CORS dari daftar origin, JSON limit 10kb
+- Reset password menaikkan versi sesi agar token lama tidak dapat dipakai lagi
 
 ## Keamanan & keterbatasan
 - `public` endpoint tidak pernah mengembalikan `email`/`passwordHash`/`id` internal — hanya name/username/bio/skills/links/projects

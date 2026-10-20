@@ -5,7 +5,9 @@ import { authenticateToken, type AuthRequest } from '../middleware/auth'
 const router = Router()
 
 const MAX_NAME_LENGTH = 100
+const MAX_USERNAME_LENGTH = 30
 const MAX_BIO_LENGTH = 2000
+const MAX_LOCATION_LENGTH = 100
 const MAX_SKILLS = 30
 const MAX_SKILL_LENGTH = 40
 const MAX_URL_LENGTH = 2048
@@ -36,8 +38,12 @@ router.get('/', async (req: AuthRequest, res) => {
         email: true,
         bio: true,
         skills: true,
+        avatarUrl: true,
+        location: true,
         githubUrl: true,
+        linkedinUrl: true,
         websiteUrl: true,
+        portfolioPublished: true,
         createdAt: true,
         _count: { select: { projects: true } },
       },
@@ -56,7 +62,18 @@ router.get('/', async (req: AuthRequest, res) => {
 
 router.patch('/', async (req: AuthRequest, res) => {
   try {
-    const { name, bio, skills, githubUrl, websiteUrl } = req.body ?? {}
+    const {
+      name,
+      username,
+      bio,
+      skills,
+      avatarUrl,
+      location,
+      githubUrl,
+      linkedinUrl,
+      websiteUrl,
+      portfolioPublished,
+    } = req.body ?? {}
 
     if (
       name !== undefined &&
@@ -66,6 +83,19 @@ router.patch('/', async (req: AuthRequest, res) => {
     ) {
       return res.status(400).json({
         message: `Nama wajib diisi dan maksimal ${MAX_NAME_LENGTH} karakter.`,
+      })
+    }
+
+    const normalizedUsername =
+      typeof username === 'string' ? username.trim().toLowerCase() : username
+    if (
+      username !== undefined &&
+      (typeof username !== 'string' ||
+        normalizedUsername.length > MAX_USERNAME_LENGTH ||
+        !/^[a-z0-9_]{3,30}$/.test(normalizedUsername))
+    ) {
+      return res.status(400).json({
+        message: 'Username harus 3–30 karakter, huruf kecil, angka, atau underscore.',
       })
     }
 
@@ -105,7 +135,27 @@ router.patch('/', async (req: AuthRequest, res) => {
       }
     }
 
-    for (const url of [githubUrl, websiteUrl]) {
+    if (
+      location !== undefined &&
+      location !== null &&
+      (typeof location !== 'string' ||
+        location.trim().length > MAX_LOCATION_LENGTH)
+    ) {
+      return res.status(400).json({
+        message: `Lokasi maksimal ${MAX_LOCATION_LENGTH} karakter.`,
+      })
+    }
+
+    if (
+      portfolioPublished !== undefined &&
+      typeof portfolioPublished !== 'boolean'
+    ) {
+      return res.status(400).json({
+        message: 'Status publikasi portfolio harus berupa boolean.',
+      })
+    }
+
+    for (const url of [avatarUrl, githubUrl, linkedinUrl, websiteUrl]) {
       if (url !== undefined && url !== null && typeof url !== 'string') {
         return res.status(400).json({
           message: 'URL harus berupa teks.',
@@ -139,14 +189,35 @@ router.patch('/', async (req: AuthRequest, res) => {
       where: { id: req.userId },
       data: {
         ...(name !== undefined && { name: name.trim() }),
+        ...(normalizedUsername !== undefined && {
+          username: normalizedUsername,
+        }),
         ...(bio !== undefined && { bio: bio.trim() || null }),
         ...(normalizedSkills !== undefined && {
           skills: normalizedSkills,
+        }),
+        ...(avatarUrl !== undefined && {
+          avatarUrl:
+            typeof avatarUrl === 'string' && avatarUrl.trim()
+              ? avatarUrl.trim()
+              : null,
+        }),
+        ...(location !== undefined && {
+          location:
+            typeof location === 'string' && location.trim()
+              ? location.trim()
+              : null,
         }),
         ...(githubUrl !== undefined && {
           githubUrl:
             typeof githubUrl === 'string' && githubUrl.trim()
               ? githubUrl.trim()
+              : null,
+        }),
+        ...(linkedinUrl !== undefined && {
+          linkedinUrl:
+            typeof linkedinUrl === 'string' && linkedinUrl.trim()
+              ? linkedinUrl.trim()
               : null,
         }),
         ...(websiteUrl !== undefined && {
@@ -155,6 +226,7 @@ router.patch('/', async (req: AuthRequest, res) => {
               ? websiteUrl.trim()
               : null,
         }),
+        ...(portfolioPublished !== undefined && { portfolioPublished }),
       },
       select: {
         id: true,
@@ -163,8 +235,12 @@ router.patch('/', async (req: AuthRequest, res) => {
         email: true,
         bio: true,
         skills: true,
+        avatarUrl: true,
+        location: true,
         githubUrl: true,
+        linkedinUrl: true,
         websiteUrl: true,
+        portfolioPublished: true,
       },
     })
 
@@ -173,6 +249,17 @@ router.patch('/', async (req: AuthRequest, res) => {
       user,
     })
   } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'P2002'
+    ) {
+      return res.status(409).json({
+        message: 'Username sudah digunakan.',
+      })
+    }
+
     if (
       typeof error === 'object' &&
       error !== null &&

@@ -19,3 +19,13 @@ export const registerRateLimit = rateLimit({
     message: 'Terlalu banyak percobaan registrasi. Coba lagi dalam 1 jam.',
   },
 })
+
+export const passwordResetRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: {
+    message: 'Terlalu banyak permintaan reset password. Coba lagi dalam 1 jam.',
+  },
+})

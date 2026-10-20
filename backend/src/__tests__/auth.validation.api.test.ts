@@ -8,6 +8,16 @@ describe('POST /api/auth/register — validation (no DB for 400)', () => {
     expect(res.status).toBe(400)
   })
 
+  it('400 when name exceeds the profile name limit', async () => {
+    const res = await request(app).post('/api/auth/register').send({
+      name: 'A'.repeat(101),
+      username: 'ana_test',
+      email: 'ana@example.com',
+      password: 'password123',
+    })
+    expect(res.status).toBe(400)
+  })
+
   it('400 when password too short', async () => {
     const res = await request(app).post('/api/auth/register').send({
       name: 'Ana',
@@ -52,6 +62,22 @@ describe('POST /api/auth/login — validation', () => {
       email: 'a@b.com',
       password: 'x'.repeat(73),
     })
+    expect(res.status).toBe(400)
+  })
+})
+
+describe('password recovery validation', () => {
+  it('400 when the recovery email is invalid', async () => {
+    const res = await request(app)
+      .post('/api/auth/password/forgot')
+      .send({ email: 'not-an-email' })
+    expect(res.status).toBe(400)
+  })
+
+  it('400 when the reset token or new password is invalid', async () => {
+    const res = await request(app)
+      .post('/api/auth/password/reset')
+      .send({ token: 'invalid', password: 'short' })
     expect(res.status).toBe(400)
   })
 })

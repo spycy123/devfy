@@ -1,7 +1,17 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Code2 } from 'lucide-react'
-import { API_URL } from '../lib/api'
+import { ArrowLeft, ArrowRight, Code2, LoaderCircle } from 'lucide-react'
+import { apiRequest } from '../lib/api'
+
+interface LoginResponse {
+  token: string
+  user: {
+    id: string
+    name: string
+    username: string
+    email: string
+  }
+}
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -16,17 +26,10 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const data = await apiRequest<LoginResponse>('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login gagal.')
-      }
 
       localStorage.setItem('devfy_token', data.token)
       localStorage.setItem('devfy_user', JSON.stringify(data.user))
@@ -89,6 +92,10 @@ export default function LoginPage() {
             required
           />
 
+          <div className="auth-password-help">
+            <Link to="/forgot-password">Lupa password?</Link>
+          </div>
+
           {error && (
             <p role="alert" className="auth-error">{error}</p>
           )}
@@ -98,7 +105,12 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
           >
-            {loading ? 'Memproses...' : 'Masuk ke akun'}
+            {loading ? (
+              <>
+                <LoaderCircle className="loading-spinner" size={17} />
+                Memproses...
+              </>
+            ) : 'Masuk ke akun'}
             {!loading && <ArrowRight size={17} />}
           </button>
         </form>

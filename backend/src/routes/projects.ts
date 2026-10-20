@@ -9,6 +9,7 @@ const MAX_DESCRIPTION_LENGTH = 5000
 const MAX_TECH_STACK_ITEMS = 30
 const MAX_TECH_LENGTH = 50
 const MAX_URL_LENGTH = 2048
+const MAX_SLUG_LENGTH = 100
 
 router.use(authenticateToken)
 
@@ -68,6 +69,37 @@ function normalizeTechStack(value: unknown):
   return { valid: true, value: normalized }
 }
 
+function slugFromTitle(title: string) {
+  return title
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, MAX_SLUG_LENGTH)
+    .replace(/-$/g, '') || 'project'
+}
+
+async function createUniqueSlug(ownerId: string, title: string) {
+  const baseSlug = slugFromTitle(title)
+
+  for (let suffix = 1; suffix <= 100; suffix += 1) {
+    const candidate = suffix === 1 ? baseSlug : `${baseSlug}-${suffix}`
+    const existing = await prisma.project.findFirst({
+      where: { ownerId, slug: candidate },
+      select: { id: true },
+    })
+
+    if (!existing) return candidate
+  }
+
+  throw new Error('Tidak dapat membuat slug unik untuk proyek.')
+}
+
+function isProjectStatus(value: unknown): value is 'DRAFT' | 'PUBLISHED' {
+  return value === 'DRAFT' || value === 'PUBLISHED'
+}
+
 router.get('/', async (req: AuthRequest, res) => {
   try {
     const projects = await prisma.project.findMany({
@@ -84,7 +116,7 @@ router.get('/', async (req: AuthRequest, res) => {
 
 router.post('/', async (req: AuthRequest, res) => {
   try {
-    const { title, description, techStack, repositoryUrl, demoUrl } =
+    const { title, description, techStack, thumbnailUrl, repositoryUrl, demoUrl, status } =
       req.body ?? {}
 
     if (
@@ -101,6 +133,7 @@ router.post('/', async (req: AuthRequest, res) => {
     }
 
     const normalizedTechStack = normalizeTechStack(techStack)
+    const normalizedThumbnailUrl = normalizeOptionalUrl(thumbnailUrl)
     const normalizedRepositoryUrl = normalizeOptionalUrl(repositoryUrl)
     const normalizedDemoUrl = normalizeOptionalUrl(demoUrl)
 
@@ -110,20 +143,34 @@ router.post('/', async (req: AuthRequest, res) => {
       })
     }
 
-    if (!normalizedRepositoryUrl.valid || !normalizedDemoUrl.valid) {
+    if (
+      !normalizedThumbnailUrl.valid ||
+      !normalizedRepositoryUrl.valid ||
+      !normalizedDemoUrl.valid
+    ) {
       return res.status(400).json({
-        message: 'URL repository atau demo tidak valid. Gunakan HTTP atau HTTPS.',
+        message: 'URL thumbnail, repository, atau demo tidak valid. Gunakan HTTP atau HTTPS.',
       })
     }
 
+    if (status !== undefined && !isProjectStatus(status)) {
+      return res.status(400).json({
+        message: 'Status proyek harus draft atau published.',
+      })
+    }
+
+    const ownerId = req.userId!
     const project = await prisma.project.create({
       data: {
         title: title.trim(),
+        slug: await createUniqueSlug(ownerId, title.trim()),
         description: description.trim(),
         techStack: normalizedTechStack.value ?? [],
+        thumbnailUrl: normalizedThumbnailUrl.value ?? null,
         repositoryUrl: normalizedRepositoryUrl.value ?? null,
         demoUrl: normalizedDemoUrl.value ?? null,
-        ownerId: req.userId!,
+        status: status ?? 'DRAFT',
+        ownerId,
       },
     })
 
@@ -132,6 +179,16 @@ router.post('/', async (req: AuthRequest, res) => {
       project,
     })
   } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'P2002'
+    ) {
+      return res.status(409).json({
+        message: 'Slug proyek sudah digunakan. Coba ubah judul proyek.',
+      })
+    }
     console.error('Create project error:', error)
     return res.status(500).json({ message: 'Gagal menambahkan proyek.' })
   }
@@ -139,7 +196,7 @@ router.post('/', async (req: AuthRequest, res) => {
 
 router.patch('/:id', async (req: AuthRequest, res) => {
   try {
-    const { title, description, techStack, repositoryUrl, demoUrl } =
+    const { title, description, techStack, thumbnailUrl, repositoryUrl, demoUrl, status } =
       req.body ?? {}
 
     if (
@@ -161,6 +218,7 @@ router.patch('/:id', async (req: AuthRequest, res) => {
     }
 
     const normalizedTechStack = normalizeTechStack(techStack)
+    const normalizedThumbnailUrl = normalizeOptionalUrl(thumbnailUrl)
     const normalizedRepositoryUrl = normalizeOptionalUrl(repositoryUrl)
     const normalizedDemoUrl = normalizeOptionalUrl(demoUrl)
 
@@ -170,9 +228,19 @@ router.patch('/:id', async (req: AuthRequest, res) => {
       })
     }
 
-    if (!normalizedRepositoryUrl.valid || !normalizedDemoUrl.valid) {
+    if (
+      !normalizedThumbnailUrl.valid ||
+      !normalizedRepositoryUrl.valid ||
+      !normalizedDemoUrl.valid
+    ) {
       return res.status(400).json({
-        message: 'Format URL tidak valid. Gunakan HTTP atau HTTPS.',
+        message: 'URL thumbnail, repository, atau demo tidak valid. Gunakan HTTP atau HTTPS.',
+      })
+    }
+
+    if (status !== undefined && !isProjectStatus(status)) {
+      return res.status(400).json({
+        message: 'Status proyek harus draft atau published.',
       })
     }
 
@@ -200,12 +268,16 @@ router.patch('/:id', async (req: AuthRequest, res) => {
         ...(normalizedTechStack.value !== undefined && {
           techStack: normalizedTechStack.value,
         }),
+        ...(normalizedThumbnailUrl.value !== undefined && {
+          thumbnailUrl: normalizedThumbnailUrl.value,
+        }),
         ...(normalizedRepositoryUrl.value !== undefined && {
           repositoryUrl: normalizedRepositoryUrl.value,
         }),
         ...(normalizedDemoUrl.value !== undefined && {
           demoUrl: normalizedDemoUrl.value,
         }),
+        ...(status !== undefined && { status }),
       },
     })
 

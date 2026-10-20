@@ -7,13 +7,16 @@ import {
   ExternalLink,
   Globe,
   LoaderCircle,
+  MapPin,
 } from 'lucide-react'
-import { API_URL } from '../lib/api'
+import { apiRequest } from '../lib/api'
 
 interface PublicProject {
   title: string
+  slug: string
   description: string
   techStack: string[]
+  thumbnailUrl: string | null
   repositoryUrl: string | null
   demoUrl: string | null
   createdAt: string
@@ -24,7 +27,10 @@ interface PublicUser {
   username: string
   bio: string | null
   skills: string[]
+  avatarUrl: string | null
+  location: string | null
   githubUrl: string | null
+  linkedinUrl: string | null
   websiteUrl: string | null
   projects: PublicProject[]
 }
@@ -44,14 +50,9 @@ function PublicPortfolioPage() {
       setUser(null)
 
       try {
-        const response = await fetch(
-          `${API_URL}/public/${encodeURIComponent(username ?? '')}`,
+        const data = await apiRequest<{ user: PublicUser }>(
+          `/public/${encodeURIComponent(username ?? '')}`,
         )
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.message || 'Portofolio tidak ditemukan.')
-        }
 
         if (active) setUser(data.user)
       } catch (err) {
@@ -76,7 +77,7 @@ function PublicPortfolioPage() {
 
   if (loading) {
     return (
-      <main className="public-state">
+      <main className="public-state" role="status" aria-live="polite">
         <LoaderCircle className="loading-icon" size={32} />
         <p>Memuat portofolio...</p>
       </main>
@@ -119,6 +120,10 @@ function PublicPortfolioPage() {
           DEVELOPER PORTFOLIO
         </div>
 
+        {user.avatarUrl && (
+          <img className="public-avatar" src={user.avatarUrl} alt="" />
+        )}
+
         <h1>
           Halo, gw <span>{user.name}</span>
         </h1>
@@ -129,6 +134,10 @@ function PublicPortfolioPage() {
           {user.bio || 'Seorang developer yang sedang membangun sesuatu yang keren.'}
         </p>
 
+        {user.location && (
+          <p className="public-location"><MapPin size={16} /> {user.location}</p>
+        )}
+
         <div className="public-socials">
           {user.githubUrl && (
             <a
@@ -138,6 +147,17 @@ function PublicPortfolioPage() {
               rel="noreferrer"
             >
               <Code2 size={17} /> GitHub <ArrowUpRight size={14} />
+            </a>
+          )}
+
+          {user.linkedinUrl && (
+            <a
+              className="public-social-link"
+              href={user.linkedinUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Code2 size={17} /> LinkedIn <ArrowUpRight size={14} />
             </a>
           )}
 
@@ -192,13 +212,21 @@ function PublicPortfolioPage() {
         ) : (
           <div className="public-project-grid">
             {user.projects.map((project, index) => (
-              <article className="public-project-card" key={`${project.title}-${index}`}>
+            <article className="public-project-card" key={project.slug}>
                 <div className="public-project-top">
                   <span className="public-project-number">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <Code2 size={20} />
                 </div>
+
+                {project.thumbnailUrl && (
+                  <img
+                    className="public-project-thumbnail"
+                    src={project.thumbnailUrl}
+                    alt={`Thumbnail ${project.title}`}
+                  />
+                )}
 
                 <h3>{project.title}</h3>
                 <p className="public-project-description">
@@ -214,6 +242,11 @@ function PublicPortfolioPage() {
                 )}
 
                 <div className="public-project-links">
+                  <Link
+                    to={`/u/${encodeURIComponent(user.username)}/projects/${encodeURIComponent(project.slug)}`}
+                  >
+                    Project details <ArrowUpRight size={15} />
+                  </Link>
                   {project.demoUrl && (
                     <a
                       href={project.demoUrl}

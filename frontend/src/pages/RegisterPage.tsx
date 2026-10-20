@@ -1,7 +1,17 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Code2 } from 'lucide-react'
-import { API_URL } from '../lib/api'
+import { ArrowLeft, ArrowRight, Code2, LoaderCircle } from 'lucide-react'
+import { apiRequest } from '../lib/api'
+
+interface RegisterResponse {
+  token: string
+  user: {
+    id: string
+    name: string
+    username: string
+    email: string
+  }
+}
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -18,17 +28,10 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
+      const data = await apiRequest<RegisterResponse>('/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, username, email, password }),
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registrasi gagal.')
-      }
 
       localStorage.setItem('devfy_token', data.token)
       localStorage.setItem('devfy_user', JSON.stringify(data.user))
@@ -75,6 +78,7 @@ export default function RegisterPage() {
             type="text"
             placeholder="Nama kamu"
             autoComplete="name"
+            maxLength={100}
             value={name}
             onChange={(event) => setName(event.target.value)}
             required
@@ -126,7 +130,12 @@ export default function RegisterPage() {
             type="submit"
             disabled={loading}
           >
-            {loading ? 'Membuat akun...' : 'Buat akun'}
+            {loading ? (
+              <>
+                <LoaderCircle className="loading-spinner" size={17} />
+                Membuat akun...
+              </>
+            ) : 'Buat akun'}
             {!loading && <ArrowRight size={17} />}
           </button>
         </form>
