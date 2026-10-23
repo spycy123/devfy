@@ -299,11 +299,16 @@ describe.skipIf(!runLiveIntegration)('live database integration', () => {
         },
       })
 
-      const reset = await request(app).post('/api/auth/password/reset').send({
-        token: rawToken,
-        password: 'new-password123',
-      })
-      expect(reset.status).toBe(200)
+      const resetPasswords = ['new-password123', 'another-password123']
+      const resets = await Promise.all(
+        resetPasswords.map((newPassword) =>
+          request(app).post('/api/auth/password/reset').send({
+            token: rawToken,
+            password: newPassword,
+          }),
+        ),
+      )
+      expect(resets.map((reset) => reset.status).sort()).toEqual([200, 400])
 
       const oldToken = tokenA
       const oldPassword = await request(app).post('/api/auth/login').send({
@@ -312,11 +317,22 @@ describe.skipIf(!runLiveIntegration)('live database integration', () => {
       })
       expect(oldPassword.status).toBe(401)
 
+      const winningPassword =
+        resetPasswords[resets.findIndex((reset) => reset.status === 200)]
       const newPassword = await request(app).post('/api/auth/login').send({
         email: `devfy_a_${suffix}@example.com`,
-        password: 'new-password123',
+        password: winningPassword,
       })
       expect(newPassword.status).toBe(200)
+
+      const losingPassword = resetPasswords.find(
+        (_password, index) => resets[index].status === 400,
+      )
+      const rejectedPassword = await request(app).post('/api/auth/login').send({
+        email: `devfy_a_${suffix}@example.com`,
+        password: losingPassword,
+      })
+      expect(rejectedPassword.status).toBe(401)
 
       const revokedSession = await request(app)
         .get('/api/profile')

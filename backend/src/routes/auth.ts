@@ -273,18 +273,37 @@ router.post('/password/reset', passwordResetRateLimit, async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 12)
-    await prisma.$transaction([
-      prisma.user.update({
+    const consumed = await prisma.$transaction(async (transaction) => {
+      const result = await transaction.passwordResetToken.deleteMany({
+        where: {
+          id: resetToken.id,
+          tokenHash: hashResetToken(token),
+          userId: resetToken.userId,
+          expiresAt: { gt: new Date() },
+        },
+      })
+
+      if (result.count !== 1) return false
+
+      await transaction.user.update({
         where: { id: resetToken.userId },
         data: {
           passwordHash,
           tokenVersion: { increment: 1 },
         },
-      }),
-      prisma.passwordResetToken.deleteMany({
+      })
+      await transaction.passwordResetToken.deleteMany({
         where: { userId: resetToken.userId },
-      }),
-    ])
+      })
+
+      return true
+    })
+
+    if (!consumed) {
+      return res.status(400).json({
+        message: 'Tautan reset tidak valid atau sudah kedaluwarsa.',
+      })
+    }
 
     return res.json({ message: 'Password berhasil diubah. Silakan login kembali.' })
   } catch (error) {

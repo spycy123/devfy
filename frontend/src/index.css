@@ -2,9 +2,21 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #f5f5f5;
-  background: #09090b;
+  font-family: ui-rounded, "Avenir Next", "Segoe UI", sans-serif;
+  color: #213b38;
+  background: #f2ecdf;
+  color-scheme: light;
+  --bg: #f2ecdf;
+  --surface: #f8f2e7;
+  --surface-light: #ede4d4;
+  --border: #d8ccb9;
+  --text: #213b38;
+  --muted: #697771;
+  --lime: #176b63;
+  --lime-soft: rgba(23, 107, 99, 0.1);
+  --warm-shadow:
+    8px 8px 18px rgba(113, 94, 63, 0.14),
+    -7px -7px 17px rgba(255, 252, 243, 0.85);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -23,6 +35,9 @@ body {
   margin: 0;
   min-width: 0;
   min-height: 100vh;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.55;
 }
 
 button,
@@ -45,6 +60,6 @@ button {
 }
 
 ::selection {
-  color: #09090b;
-  background: #c4f82a;
+  color: #f8f2e7;
+  background: #176b63;
 }
