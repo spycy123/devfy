@@ -93,6 +93,11 @@ describe('private routes without token', () => {
     expect(res.status).toBe(401)
   })
 
+  it('401 POST /api/uploads/avatars without token', async () => {
+    const res = await request(app).post('/api/uploads/avatars')
+    expect(res.status).toBe(401)
+  })
+
   it('401 with invalid JWT', async () => {
     const res = await request(app)
       .get('/api/profile')

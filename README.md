@@ -4,7 +4,7 @@ Devfy memungkinkan pengguna: registrasi/login, mengelola profil & proyek, dan me
 
 ## Stack
 - **Frontend:** React 19, TypeScript, Vite, Tailwind CSS v4, React Router v7, lucide-react
-- **Backend:** Node.js, Express 5, TypeScript, Prisma 6, PostgreSQL, JWT, bcryptjs, express-rate-limit, dotenv, cors
+- **Backend:** Node.js, Express 5, TypeScript, Prisma 6, PostgreSQL, JWT, bcryptjs, multer, express-rate-limit, dotenv, cors
 - **Database:** PostgreSQL
 
 ## Struktur monorepo
@@ -21,6 +21,7 @@ prisma/schema.prisma, prisma.config.ts (classic engine, tidak ada --config neede
 DATABASE_URL=postgresql://user:password@localhost:5432/devfy_db
 JWT_SECRET=ganti-secret-min-32-char-random
 PORT=5000
+UPLOADS_DIR=./uploads
 FRONTEND_URL=http://localhost:5173
 RESEND_API_KEY=
 EMAIL_FROM=Devfy <onboarding@resend.dev>
@@ -29,8 +30,6 @@ EMAIL_FROM=Devfy <onboarding@resend.dev>
 ### Frontend (`frontend/.env.example`)
 ```
 VITE_API_URL=http://localhost:5000/api
-VITE_CLOUDINARY_CLOUD_NAME=
-VITE_CLOUDINARY_UPLOAD_PRESET=
 ```
 Frontend membaca `VITE_API_URL`; jika tidak diset, fallback ke `http://localhost:5000/api`. **Jangan hardcode localhost untuk production.**
 
@@ -69,8 +68,8 @@ cd frontend && npm run dev   # http://localhost:5173
 
 1. Buat akun Resend, tambahkan domain pengirim, lalu ikuti instruksi DNS yang ditampilkan Resend. Setelah domain terverifikasi, buat API key.
 2. Isi `RESEND_API_KEY` dan `EMAIL_FROM` (contoh `Devfy <no-reply@domainmu.com>`) di `backend/.env`, lalu restart backend. Reset password belum aktif sampai provider siap.
-3. Buat akun Cloudinary, buka **Settings → Upload → Upload presets**, lalu buat preset unsigned khusus Devfy.
-4. Batasi preset Cloudinary ke JPG/PNG/WebP dan maksimum 5 MB. Isi `VITE_CLOUDINARY_CLOUD_NAME` dan `VITE_CLOUDINARY_UPLOAD_PRESET` di `frontend/.env`, lalu restart frontend. Jangan pernah meletakkan API secret Cloudinary di frontend.
+3. Foto profil dan thumbnail proyek diunggah ke backend melalui endpoint terautentikasi. File JPG, PNG, dan WebP maksimum 5 MB disimpan di `backend/uploads` secara default.
+4. Untuk deployment, pasang persistent disk pada backend dan isi `UPLOADS_DIR` dengan path mount disk tersebut. Tanpa persistent disk, file lokal dapat hilang saat instance di-redeploy atau diganti.
 5. Pengguna juga bisa menempel URL foto/thumbnail sebagai alternatif upload.
 
 - Akun dan proyek baru default privat: project berstatus `DRAFT`, portfolio belum dipublikasikan. Publish project dahulu, lalu publish portfolio.

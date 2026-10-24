@@ -4,6 +4,7 @@ node_modules
 
 # Build artifacts that must not be committed (tsc output belongs to dist/)
 /dist
+/uploads
 /src/**/*.js
 /src/**/*.js.map
 /src/**/*.d.ts

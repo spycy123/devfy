@@ -4,13 +4,6 @@ export const API_URL = (
   configuredApiUrl || 'http://localhost:5000/api'
 ).replace(/\/$/, '')
 
-const cloudinaryCloudName = (
-  import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string | undefined
-)?.trim()
-const cloudinaryUploadPreset = (
-  import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string | undefined
-)?.trim()
-
 export class ApiError extends Error {
   readonly status: number
 
@@ -29,23 +22,22 @@ export async function uploadImage(file: File, folder: 'avatars' | 'projects') {
   if (file.size > 5 * 1024 * 1024) {
     throw new Error('Ukuran gambar maksimal 5 MB.')
   }
-  if (!cloudinaryCloudName || !cloudinaryUploadPreset) {
-    throw new Error(
-      'Upload gambar belum dikonfigurasi. Atur Cloudinary di file frontend/.env.',
-    )
+
+  const token = localStorage.getItem('devfy_token')
+  if (!token) {
+    throw new Error('Sesi login tidak ditemukan. Silakan login kembali.')
   }
 
   const formData = new FormData()
   formData.set('file', file)
-  formData.set('upload_preset', cloudinaryUploadPreset)
-  formData.set('folder', `devfy/${folder}`)
 
   let response: Response
   try {
-    response = await fetch(
-      `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudinaryCloudName)}/image/upload`,
-      { method: 'POST', body: formData },
-    )
+    response = await fetch(`${API_URL}/uploads/${folder}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    })
   } catch (error) {
     throw new Error('Tidak dapat menghubungi layanan upload gambar.', {
       cause: error,
@@ -57,8 +49,8 @@ export async function uploadImage(file: File, folder: 'avatars' | 'projects') {
     !response.ok ||
     typeof result !== 'object' ||
     result === null ||
-    !('secure_url' in result) ||
-    typeof result.secure_url !== 'string'
+    !('url' in result) ||
+    typeof result.url !== 'string'
   ) {
     const message =
       typeof result === 'object' &&
@@ -69,11 +61,16 @@ export async function uploadImage(file: File, folder: 'avatars' | 'projects') {
       'message' in result.error &&
       typeof result.error.message === 'string'
         ? result.error.message
-        : 'Upload gambar gagal.'
+        : typeof result === 'object' &&
+            result !== null &&
+            'message' in result &&
+            typeof result.message === 'string'
+          ? result.message
+          : 'Upload gambar gagal.'
     throw new Error(message)
   }
 
-  return result.secure_url
+  return new URL(result.url, API_URL).toString()
 }
 
 export async function apiRequest<T>(

@@ -18,6 +18,7 @@ Devfy adalah monorepo — namun setiap host boleh di-deploy **hanya satu subdir*
 ```
 NODE_ENV=production
 PORT=5000               # atau port yang ditetapkan host (Railway/Fly inject PORT sendiri — biarkan)
+UPLOADS_DIR=/data/devfy-uploads # path persistent disk untuk foto dan thumbnail
 DATABASE_URL=postgres://user:pass@HOST:5432/dbname?sslmode=require
 JWT_SECRET=<minimal 32 karakter acak, simpan di secret manager host>
 FRONTEND_URL=https://<domain-frontend-anda>.vercel.app
@@ -30,8 +31,6 @@ EMAIL_FROM=Devfy <no-reply@domain-anda>
 ### Frontend (build-time)
 ```
 VITE_API_URL=https://<backend-host>/api
-VITE_CLOUDINARY_CLOUD_NAME=<cloud name>
-VITE_CLOUDINARY_UPLOAD_PRESET=<unsigned preset khusus Devfy>
 ```
 `VITE_`-prefix artinya var dibundel pada **build time**. Jika `VITE_API_URL` berubah, **rebuild & redeploy** frontend. Production build akan gagal jika variabel ini tidak diset; fallback localhost hanya untuk development.
 
@@ -40,18 +39,14 @@ VITE_CLOUDINARY_UPLOAD_PRESET=<unsigned preset khusus Devfy>
 ### Email dan gambar (fitur MVP)
 
 - Buat API key Resend dan verifikasi domain pengirim. `EMAIL_FROM` harus menggunakan domain yang sudah diverifikasi di Resend. Backend menolak startup production bila `RESEND_API_KEY` atau `EMAIL_FROM` belum ada.
-- Di Cloudinary, buat unsigned upload preset untuk Devfy. Batasi ke JPG, PNG, WebP dan ukuran maksimum 5 MB. Cloud name dan preset bukan secret, tetapi API secret Cloudinary tidak boleh memakai awalan `VITE_` atau dikirim ke browser.
-- Nilai `VITE_CLOUDINARY_CLOUD_NAME` dan `VITE_CLOUDINARY_UPLOAD_PRESET` diset di hosting frontend sebelum build. Tanpa keduanya, upload gambar memberi pesan konfigurasi; semua profil dan proyek masih dapat memakai URL gambar.
+- Backend menyimpan foto profil dan thumbnail pada direktori `UPLOADS_DIR` (default `backend/uploads`). Di hosting, pasang persistent disk pada backend dan arahkan `UPLOADS_DIR` ke mount path-nya. Pastikan volume tersebut tetap tersedia antar-redeploy dan antar-restart.
+- Endpoint unggah memerlukan token login, menerima JPG/PNG/WebP maksimum 5 MB, serta menyajikan file dari `/uploads/`. Pengguna juga dapat memakai URL gambar eksternal.
 - Password reset memakai token acak satu kali, hash token disimpan di Postgres, berlaku 1 jam, dan endpoint dibatasi rate limit.
 
 Project baru berstatus `DRAFT`, portfolio baru unpublished. Pengguna perlu mempublikasikan project terlebih dahulu lalu mengaktifkan portfolio dari dashboard. Migrasi mengatur data lama sebagai privat agar tidak terbit tanpa persetujuan.
 
 ### CORS production
-`backend/src/app.ts` hanya mengizinkan:
-```ts
-['http://localhost:5173', process.env.FRONTEND_URL].filter(Boolean)
-```
-Di production isi `FRONTEND_URL` dengan origin Vercel/Netlify/domain custom. Domain lain akan mendapat `CORS: false` dan request browser diblokir (bukan 204/403 backend, tetapi preflight gagal).
+Di development, origin `http://localhost` dan `http://127.0.0.1` diizinkan pada port mana pun agar port Vite alternatif bisa dipakai. Di production, hanya origin `FRONTEND_URL` yang diizinkan. Isi dengan origin Vercel/Netlify/domain custom; domain lain akan mendapat `CORS: false` dan request browser diblokir (bukan 204/403 backend, tetapi preflight gagal).
 
 ## Build & start commands
 

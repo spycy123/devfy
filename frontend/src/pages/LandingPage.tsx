@@ -234,26 +234,6 @@ function App() {
               </div>
             </div>
 
-            <div className="visual-label">
-              A LITTLE SPACE FOR BIG IDEAS <ArrowDownRight size={14} />
-            </div>
-          </div>
-        </section>
-
-        <section className="ticker" aria-label="Devfy benefits">
-          <div className="ticker-track">
-            {Array.from({ length: 2 }, (_, group) => (
-              <div className="ticker-group" key={group}>
-                <span>BUILD YOUR PROFILE</span>
-                <i />
-                <span>SHOW YOUR PROJECTS</span>
-                <i />
-                <span>SHARE YOUR JOURNEY</span>
-                <i />
-                <span>GROW AS A DEVELOPER</span>
-                <i />
-              </div>
-            ))}
           </div>
         </section>
 

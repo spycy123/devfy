@@ -312,7 +312,7 @@ export default function DashboardPage() {
     try {
       const avatarUrl = await uploadImage(file, 'avatars')
       setProfileForm((current) => ({ ...current, avatarUrl }))
-      setMessage('Foto profil berhasil diunggah.')
+      setMessage('Foto berhasil diunggah. Tekan Save profile untuk menyimpannya.')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal mengunggah gambar.')
     } finally {
@@ -691,7 +691,7 @@ export default function DashboardPage() {
                   disabled={uploadingImage}
                 />
                 <span className="form-hint">
-                  JPG, PNG, atau WebP hingga 5 MB. Upload memakai Cloudinary.
+                  JPG, PNG, atau WebP hingga 5 MB.
                 </span>
                 <input
                   type="url"
@@ -987,7 +987,9 @@ export default function DashboardPage() {
                   }
                   disabled={uploadingImage}
                 />
-                <span className="form-hint">JPG, PNG, atau WebP hingga 5 MB.</span>
+                <span className="form-hint">
+                  JPG, PNG, atau WebP hingga 5 MB. Tekan Save profile setelah pratinjau muncul.
+                </span>
                 <input
                   type="url"
                   value={profileForm.avatarUrl}

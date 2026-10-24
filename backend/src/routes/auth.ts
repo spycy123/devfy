@@ -138,9 +138,17 @@ router.post('/login', loginRateLimit, async (req, res) => {
       })
     }
 
-    const user = await prisma.user.findFirst({
-      where: { email: { equals: email.trim(), mode: 'insensitive' } },
-    })
+    let user
+    try {
+      user = await prisma.user.findFirst({
+        where: { email: { equals: email.trim(), mode: 'insensitive' } },
+      })
+    } catch (error) {
+      console.error('Login database error:', error)
+      return res.status(503).json({
+        message: 'Layanan login sedang tidak tersedia. Silakan coba lagi nanti.',
+      })
+    }
 
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       return res.status(401).json({
