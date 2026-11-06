@@ -10,6 +10,12 @@ import {
   MapPin,
 } from 'lucide-react'
 import { apiRequest } from '../lib/api'
+import {
+  ParallaxBackdrop,
+  ParallaxContainer,
+  ParallaxLayer,
+  TiltCard,
+} from '../components/parallax'
 
 interface PublicProject {
   title: string
@@ -101,6 +107,7 @@ function PublicPortfolioPage() {
 
   return (
     <main className="public-portfolio">
+      <ParallaxBackdrop variant="portfolio" />
       <nav className="public-nav">
         <Link className="public-brand" to="/">
           <span className="public-brand-icon">
@@ -114,14 +121,16 @@ function PublicPortfolioPage() {
         </Link>
       </nav>
 
-      <section className="public-hero">
+      <ParallaxContainer className="public-hero">
         <div className="public-eyebrow">
           <span className="public-status-dot" />
           DEVELOPER PORTFOLIO
         </div>
 
         {user.avatarUrl && (
-          <img className="public-avatar" src={user.avatarUrl} alt="" />
+          <ParallaxLayer depth={12} scrollSpeed={-0.06}>
+            <img className="public-avatar" src={user.avatarUrl} alt="" />
+          </ParallaxLayer>
         )}
 
         <h1>
@@ -172,7 +181,7 @@ function PublicPortfolioPage() {
             </a>
           )}
         </div>
-      </section>
+      </ParallaxContainer>
 
       {user.skills.length > 0 && (
         <section className="public-section">
@@ -212,7 +221,7 @@ function PublicPortfolioPage() {
         ) : (
           <div className="public-project-grid">
             {user.projects.map((project, index) => (
-            <article className="public-project-card" key={project.slug}>
+              <TiltCard as="article" className="public-project-card" key={project.slug} maxTilt={3.5} glare={true}>
                 <div className="public-project-top">
                   <span className="public-project-number">
                     {String(index + 1).padStart(2, '0')}
@@ -267,7 +276,7 @@ function PublicPortfolioPage() {
                     </a>
                   )}
                 </div>
-              </article>
+              </TiltCard>
             ))}
           </div>
         )}

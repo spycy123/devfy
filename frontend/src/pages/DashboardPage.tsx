@@ -21,6 +21,12 @@ import {
   Pencil,
 } from 'lucide-react'
 import { ApiError, apiRequest, uploadImage } from '../lib/api'
+import {
+  ParallaxBackdrop,
+  ParallaxContainer,
+  ParallaxLayer,
+  TiltCard,
+} from '../components/parallax'
 
 interface UserProfile {
   id: string
@@ -476,6 +482,7 @@ export default function DashboardPage() {
 
   return (
     <main className="dashboard-page">
+      <ParallaxBackdrop variant="dashboard" />
       <aside className="dashboard-sidebar">
         <Link to="/" className="brand">
           <span className="brand-mark"><Code2 size={21} /></span>
@@ -528,7 +535,7 @@ export default function DashboardPage() {
             <p className="dashboard-date">YOUR DEVELOPER WORKSPACE</p>
             <h1>Dashboard<span className="brand-dot">.</span></h1>
           </div>
-          <div className="dashboard-user">
+          <TiltCard className="dashboard-user" maxTilt={5} glare={true}>
             {user.avatarUrl ? (
               <img className="dashboard-avatar" src={user.avatarUrl} alt="" />
             ) : (
@@ -539,7 +546,7 @@ export default function DashboardPage() {
             <div>
               <strong>{user.name}</strong>
             </div>
-          </div>
+          </TiltCard>
         </header>
 
         {error && <p role="alert" className="dashboard-alert dashboard-error">{error}</p>}
@@ -547,28 +554,30 @@ export default function DashboardPage() {
           <p role="status" className="dashboard-alert dashboard-success">{message}</p>
         )}
 
-        <section className="dashboard-welcome">
-          <div>
-            <span className="dashboard-welcome-tag">WELCOME TO DEVFY</span>
-            <h2>
-              Build something<br />
-              <span className="heading-accent">worth sharing.</span>
-            </h2>
-            <p>
-              Halo, {user.name}! Kelola profil, simpan proyek, dan siapkan
-              portofolio developer kamu.
-            </p>
-            <a href="#profile" className="button button-primary">
-              Set up your profile <ArrowUpRight size={16} />
-            </a>
-          </div>
-          <div className="dashboard-welcome-icon">
-            <Code2 size={76} strokeWidth={1.2} />
-          </div>
-        </section>
+        <ParallaxContainer className="dashboard-welcome-wrap">
+          <TiltCard className="dashboard-welcome" maxTilt={3.5} glare={true}>
+            <div>
+              <span className="dashboard-welcome-tag">WELCOME TO DEVFY</span>
+              <h2>
+                Build something<br />
+                <span className="heading-accent">worth sharing.</span>
+              </h2>
+              <p>
+                Halo, {user.name}! Kelola profil, simpan proyek, dan siapkan
+                portofolio developer kamu.
+              </p>
+              <a href="#profile" className="button button-primary">
+                Set up your profile <ArrowUpRight size={16} />
+              </a>
+            </div>
+            <ParallaxLayer depth={24} scrollSpeed={-0.08} rotate={6} className="dashboard-welcome-icon">
+              <Code2 size={76} strokeWidth={1.2} />
+            </ParallaxLayer>
+          </TiltCard>
+        </ParallaxContainer>
 
         <section className="dashboard-stats">
-          <article className="dashboard-stat">
+          <TiltCard as="article" className="dashboard-stat" maxTilt={4} glare={true}>
             <span className="dashboard-stat-icon"><UserRound size={18} /></span>
             <p>PROFILE STATUS</p>
             <h3>{user.bio?.trim() ? 'In progress' : 'Not complete'}</h3>
@@ -577,9 +586,9 @@ export default function DashboardPage() {
                 ? 'Profil kamu sudah memiliki bio'
                 : 'Tambahkan bio untuk melengkapi profil'}
             </span>
-          </article>
+          </TiltCard>
 
-          <article className="dashboard-stat">
+          <TiltCard as="article" className="dashboard-stat" maxTilt={4} glare={true}>
             <span className="dashboard-stat-icon">
               <FolderKanban size={18} />
             </span>
@@ -588,9 +597,9 @@ export default function DashboardPage() {
             <span className="dashboard-stat-note">
               Proyek tersimpan di database
             </span>
-          </article>
+          </TiltCard>
 
-          <article className="dashboard-stat">
+          <TiltCard as="article" className="dashboard-stat" maxTilt={4} glare={true}>
             <span className="dashboard-stat-icon"><Globe size={18} /></span>
             <p>PORTFOLIO</p>
             <h3>{user.portfolioPublished ? 'Published' : 'Unpublished'}</h3>
@@ -599,7 +608,7 @@ export default function DashboardPage() {
                 ? `Portfolio aktif di /u/${user.username}`
                 : 'Publikasikan setelah profil siap'}
             </span>
-          </article>
+          </TiltCard>
         </section>
 
         <section className="dashboard-projects" id="projects">
@@ -629,7 +638,7 @@ export default function DashboardPage() {
           </div>
 
           {showProjectForm && (
-            <form className="dashboard-form" onSubmit={handleAddProject}>
+            <TiltCard as="form" className="dashboard-form" maxTilt={1.5} glare={false} onSubmit={handleAddProject}>
               <h3>{editingProjectId ? 'Edit project' : 'Add a new project'}</h3>
 
               <label>
@@ -790,22 +799,22 @@ export default function DashboardPage() {
                   Cancel
                 </button>
               </div>
-            </form>
+            </TiltCard>
           )}
 
           {projects.length === 0 ? (
-            <div className="dashboard-empty">
+            <TiltCard className="dashboard-empty" maxTilt={3.5} glare={true}>
               <span className="empty-icon"><FolderKanban size={25} /></span>
               <h3>Your next project belongs here.</h3>
               <p>
                 Kamu belum memiliki proyek. Klik Add project untuk
                 menambahkan proyek pertamamu.
               </p>
-            </div>
+            </TiltCard>
           ) : (
             <div className="dashboard-project-list">
               {projects.map((project) => (
-                <article className="dashboard-project-card" key={project.id}>
+                <TiltCard as="article" className="dashboard-project-card" key={project.id} maxTilt={3.5} glare={true}>
                   <div className="project-card-heading">
                     <span className="empty-icon"><Code2 size={22} /></span>
 
@@ -900,7 +909,7 @@ export default function DashboardPage() {
                       </a>
                     )}
                   </div>
-                </article>
+                </TiltCard>
               ))}
             </div>
           )}
@@ -1115,7 +1124,7 @@ export default function DashboardPage() {
               </button>
             </form>
           ) : (
-            <div className="dashboard-profile-details">
+            <TiltCard className="dashboard-profile-details" maxTilt={2.5} glare={true}>
               <div className="profile-card-header">
                 {user.avatarUrl ? (
                   <img className="profile-avatar-large" src={user.avatarUrl} alt="" />
@@ -1192,11 +1201,11 @@ export default function DashboardPage() {
                   )}
                 </div>
               )}
-            </div>
+            </TiltCard>
           )}
         </section>
 
-        <section className="dashboard-checklist" id="portfolio">
+        <TiltCard as="section" className="dashboard-checklist" id="portfolio" maxTilt={2.5} glare={true}>
           <h2>Your portfolio</h2>
           <p>
             {user.portfolioPublished
@@ -1245,7 +1254,7 @@ export default function DashboardPage() {
               </button>
             )}
           </div>
-        </section>
+        </TiltCard>
 
         <p className="dashboard-footer">DEVFY · YOUR WORK, YOUR STORY</p>
       </section>

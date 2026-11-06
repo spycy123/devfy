@@ -1,0 +1,193 @@
+/* Parallax System Styles */
+
+.parallax-container {
+  transform-style: preserve-3d;
+}
+
+.dashboard-welcome-wrap {
+  width: 100%;
+}
+
+.parallax-layer {
+  transform-style: preserve-3d;
+}
+
+/* Floating Ambient Backdrop */
+.parallax-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+.parallax-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(85px);
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+.parallax-orb-primary {
+  top: -8%;
+  left: 12%;
+  width: 620px;
+  height: 620px;
+  background: radial-gradient(
+    circle,
+    rgba(23, 107, 99, 0.2) 0%,
+    rgba(196, 248, 42, 0.14) 45%,
+    transparent 70%
+  );
+}
+
+.parallax-orb-accent {
+  top: 40%;
+  right: -6%;
+  width: 720px;
+  height: 720px;
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.16) 0%,
+    rgba(99, 102, 241, 0.1) 45%,
+    transparent 70%
+  );
+}
+
+.parallax-orb-secondary {
+  bottom: 2%;
+  left: -6%;
+  width: 580px;
+  height: 580px;
+  background: radial-gradient(
+    circle,
+    rgba(199, 161, 105, 0.18) 0%,
+    rgba(234, 179, 8, 0.1) 45%,
+    transparent 70%
+  );
+}
+
+/* Auth Backdrop adjustments */
+.parallax-backdrop-auth .parallax-orb-primary {
+  top: 8%;
+  left: 28%;
+  width: 540px;
+  height: 540px;
+  opacity: 1;
+}
+
+.parallax-backdrop-auth .parallax-orb-accent {
+  bottom: 8%;
+  right: 22%;
+  width: 480px;
+  height: 480px;
+}
+
+/* Dashboard Backdrop adjustments */
+.parallax-backdrop-dashboard .parallax-orb-primary {
+  top: -4%;
+  right: 8%;
+  width: 580px;
+  height: 580px;
+  opacity: 0.85;
+}
+
+.parallax-backdrop-dashboard .parallax-orb-accent {
+  top: 45%;
+  left: 18%;
+  width: 640px;
+  height: 640px;
+  opacity: 0.75;
+}
+
+/* Public Portfolio adjustments */
+.parallax-backdrop-portfolio .parallax-orb-primary {
+  top: -4%;
+  left: 18%;
+  width: 660px;
+  height: 660px;
+  opacity: 0.9;
+}
+
+/* Floating Developer Glyphs */
+.parallax-glyph {
+  position: absolute;
+  padding: 7px 16px;
+  color: var(--lime);
+  background: rgba(20, 20, 24, 0.78);
+  border: 1px solid rgba(196, 248, 42, 0.28);
+  border-radius: 9999px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 18px rgba(196, 248, 42, 0.1);
+  transition: transform 120ms ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.parallax-glyph span {
+  display: inline-block;
+  text-shadow: 0 0 14px rgba(196, 248, 42, 0.5);
+}
+
+/* 3D Tilt Cards */
+.tilt-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.tilt-card-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Smooth Parallax Scroll Items */
+.parallax-scroll-item {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+/* Responsive & Mobile Adjustments */
+@media (max-width: 768px) {
+  .parallax-glyph {
+    display: none !important;
+  }
+
+  .parallax-orb {
+    filter: blur(60px);
+    width: 320px !important;
+    height: 320px !important;
+    opacity: 0.6;
+  }
+}
+
+@media (hover: none) {
+  .tilt-card-glare {
+    display: none !important;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .parallax-backdrop,
+  .parallax-glyph,
+  .tilt-card-glare {
+    display: none !important;
+  }
+
+  .parallax-container,
+  .parallax-layer,
+  .tilt-card,
+  .parallax-scroll-item {
+    transform: none !important;
+    transition: none !important;
+  }
+}

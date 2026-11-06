@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Code2, LoaderCircle } from 'lucide-react'
 import { apiRequest } from '../lib/api'
+import { ParallaxBackdrop, TiltCard } from '../components/parallax'
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams()
@@ -37,10 +38,12 @@ export default function ResetPasswordPage() {
 
   return (
     <main className="auth-page">
-      <Link to="/login" className="auth-back">
+      <ParallaxBackdrop variant="auth" />
+
+      <Link to="/login" className="auth-back" style={{ position: 'relative', zIndex: 2 }}>
         <ArrowLeft size={16} /> Kembali ke login
       </Link>
-      <section className="auth-card">
+      <TiltCard as="section" className="auth-card" maxTilt={3.5} glare={true} style={{ zIndex: 2 }}>
         <Link to="/" className="brand auth-brand">
           <span className="brand-mark"><Code2 size={21} /></span>
           <span>devfy<span className="brand-dot">.</span></span>
@@ -96,7 +99,7 @@ export default function ResetPasswordPage() {
         <p className="auth-switch">
           Butuh tautan baru? <Link to="/forgot-password">Minta reset password</Link>
         </p>
-      </section>
+      </TiltCard>
     </main>
   )
 }

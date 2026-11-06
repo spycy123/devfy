@@ -8,6 +8,7 @@ import {
   LoaderCircle,
 } from 'lucide-react'
 import { apiRequest } from '../lib/api'
+import { ParallaxBackdrop, TiltCard } from '../components/parallax'
 
 interface PublicProject {
   title: string
@@ -82,6 +83,7 @@ export default function PublicProjectPage() {
 
   return (
     <main className="public-portfolio public-project-detail">
+      <ParallaxBackdrop variant="project" />
       <nav className="public-nav">
         <Link className="public-brand" to={`/u/${encodeURIComponent(author.username)}`}>
           <span className="public-brand-icon"><Code2 size={19} /></span>
@@ -92,7 +94,7 @@ export default function PublicProjectPage() {
         </Link>
       </nav>
 
-      <article className="project-detail-content">
+      <TiltCard as="article" className="project-detail-content" maxTilt={2.5} glare={true}>
         <Link className="public-back-link" to={`/u/${encodeURIComponent(author.username)}`}>
           <ArrowLeft size={16} /> Semua proyek
         </Link>
@@ -125,7 +127,7 @@ export default function PublicProjectPage() {
             </a>
           )}
         </div>
-      </article>
+      </TiltCard>
     </main>
   )
 }

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Code2, LoaderCircle, Mail } from 'lucide-react'
 import { apiRequest } from '../lib/api'
+import { ParallaxBackdrop, TiltCard } from '../components/parallax'
 
 export default function PasswordRecoveryPage() {
   const [email, setEmail] = useState('')
@@ -30,10 +31,12 @@ export default function PasswordRecoveryPage() {
 
   return (
     <main className="auth-page">
-      <Link to="/login" className="auth-back">
+      <ParallaxBackdrop variant="auth" />
+
+      <Link to="/login" className="auth-back" style={{ position: 'relative', zIndex: 2 }}>
         <ArrowLeft size={16} /> Kembali ke login
       </Link>
-      <section className="auth-card">
+      <TiltCard as="section" className="auth-card" maxTilt={3.5} glare={true} style={{ zIndex: 2 }}>
         <Link to="/" className="brand auth-brand">
           <span className="brand-mark"><Code2 size={21} /></span>
           <span>devfy<span className="brand-dot">.</span></span>
@@ -67,7 +70,7 @@ export default function PasswordRecoveryPage() {
         <p className="auth-switch">
           Ingat password? <Link to="/login">Masuk</Link>
         </p>
-      </section>
+      </TiltCard>
     </main>
   )
 }

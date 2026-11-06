@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Code2, LoaderCircle } from 'lucide-react'
 import { apiRequest } from '../lib/api'
+import { ParallaxBackdrop, TiltCard } from '../components/parallax'
 
 interface LoginResponse {
   token: string
@@ -48,11 +49,13 @@ export default function LoginPage() {
 
   return (
     <main className="auth-page">
-      <Link to="/" className="auth-back">
+      <ParallaxBackdrop variant="auth" />
+
+      <Link to="/" className="auth-back" style={{ position: 'relative', zIndex: 2 }}>
         <ArrowLeft size={16} /> Kembali ke beranda
       </Link>
 
-      <section className="auth-card">
+      <TiltCard as="section" className="auth-card" maxTilt={3.5} glare={true} style={{ zIndex: 2 }}>
         <Link to="/" className="brand auth-brand">
           <span className="brand-mark">
             <Code2 size={21} />
@@ -118,7 +121,7 @@ export default function LoginPage() {
         <p className="auth-switch">
           Belum punya akun? <Link to="/register">Daftar sekarang</Link>
         </p>
-      </section>
+      </TiltCard>
     </main>
   )
 }

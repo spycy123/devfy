@@ -12,6 +12,12 @@ import {
   Sparkles,
   X,
 } from 'lucide-react'
+import {
+  ParallaxBackdrop,
+  ParallaxContainer,
+  ParallaxLayer,
+  TiltCard,
+} from '../components/parallax'
 import '../App.css'
 
 const features = [
@@ -64,6 +70,7 @@ function App() {
 
   return (
     <div className="site-shell">
+      <ParallaxBackdrop variant="landing" />
       <header className="navbar">
         <a
           className="brand"
@@ -149,13 +156,15 @@ function App() {
             </div>
           </div>
 
-          <div
+          <ParallaxContainer
             className="hero-visual"
             aria-label="Illustration of a developer portfolio"
           >
-            <div className="visual-glow" />
+            <ParallaxLayer depth={-10} scrollSpeed={-0.06}>
+              <div className="visual-glow" />
+            </ParallaxLayer>
 
-            <div className="code-window">
+            <TiltCard className="code-window" maxTilt={6} glare={true} scale={1.01}>
               <div className="window-topbar">
                 <div className="window-dots">
                   <i />
@@ -213,18 +222,28 @@ function App() {
                 </span>
                 <span>TypeScript</span>
               </div>
-            </div>
+            </TiltCard>
 
-            <div className="floating-card floating-card-profile">
+            <ParallaxLayer
+              className="floating-card floating-card-profile"
+              depth={22}
+              scrollSpeed={-0.12}
+              rotate={2}
+            >
               <div className="avatar">D</div>
               <div>
                 <strong>Your next chapter.</strong>
                 <span>Developer portfolio</span>
               </div>
               <Sparkles size={17} className="floating-sparkle" />
-            </div>
+            </ParallaxLayer>
 
-            <div className="floating-card floating-card-stack">
+            <ParallaxLayer
+              className="floating-card floating-card-stack"
+              depth={-18}
+              scrollSpeed={0.14}
+              rotate={-2}
+            >
               <span className="stack-icon">
                 <Layers3 size={17} />
               </span>
@@ -232,9 +251,8 @@ function App() {
                 <strong>Your projects</strong>
                 <span>One home for your work</span>
               </div>
-            </div>
-
-          </div>
+            </ParallaxLayer>
+          </ParallaxContainer>
         </section>
 
         <section className="features section-container" id="features">
@@ -257,7 +275,7 @@ function App() {
 
           <div className="feature-grid">
             {features.map(({ number, icon: Icon, title, description }) => (
-              <article className="feature-card" key={number}>
+              <TiltCard as="article" className="feature-card" key={number} maxTilt={5} glare={true}>
                 <div className="feature-card-top">
                   <span className="feature-icon">
                     <Icon size={21} />
@@ -269,7 +287,7 @@ function App() {
                 <a href="#how-it-works" className="text-link">
                   Learn more <ArrowRight size={15} />
                 </a>
-              </article>
+              </TiltCard>
             ))}
           </div>
         </section>
@@ -296,7 +314,7 @@ function App() {
 
             <div className="workflow-steps">
               {steps.map((step, index) => (
-                <div className="workflow-step" key={step}>
+                <TiltCard className="workflow-step" key={step} maxTilt={3} glare={false}>
                   <span className="step-number">0{index + 1}</span>
                   <div>
                     <h3>{step}</h3>
@@ -311,7 +329,7 @@ function App() {
                     </p>
                   </div>
                   <Check className="step-check" size={18} />
-                </div>
+                </TiltCard>
               ))}
             </div>
           </div>
@@ -337,17 +355,17 @@ function App() {
               to find.
             </p>
           </div>
-          <div className="about-aside">
+          <TiltCard className="about-aside" maxTilt={5} glare={true} scrollSpeed={-0.03}>
             <span className="aside-quote">&ldquo;</span>
             <p>
               Your next opportunity might start with something you built today.
             </p>
             <span className="aside-signature">THE DEVFY IDEA</span>
-          </div>
+          </TiltCard>
         </section>
 
         <section className="contact section-container" id="contact">
-          <div className="contact-panel">
+          <TiltCard className="contact-panel" maxTilt={2.5} glare={false}>
             <div className="contact-copy">
               <div className="eyebrow">
                 <span className="status-dot" /> HAVE A QUESTION?
@@ -387,7 +405,7 @@ function App() {
               </button>
               <p>This opens your email app with a pre-filled message.</p>
             </form>
-          </div>
+          </TiltCard>
         </section>
       </main>
 
