@@ -3,20 +3,20 @@
 
 :root {
   font-family: ui-rounded, "Avenir Next", "Segoe UI", sans-serif;
-  color: #213b38;
-  background: #f2ecdf;
-  color-scheme: light;
-  --bg: #f2ecdf;
-  --surface: #f8f2e7;
-  --surface-light: #ede4d4;
-  --border: #d8ccb9;
-  --text: #213b38;
-  --muted: #697771;
-  --lime: #176b63;
-  --lime-soft: rgba(23, 107, 99, 0.1);
+  color: #F7F8FD;
+  background: #0A0F29;
+  color-scheme: dark;
+  --bg: #0A0F29;
+  --surface: #10173D;
+  --surface-light: #151E4B;
+  --border: rgba(255, 107, 107, 0.18);
+  --text: #F7F8FD;
+  --muted: #9AA5CE;
+  --lime: #FF6B6B;
+  --lime-soft: rgba(255, 107, 107, 0.12);
   --warm-shadow:
-    8px 8px 18px rgba(113, 94, 63, 0.14),
-    -7px -7px 17px rgba(255, 252, 243, 0.85);
+    0 14px 40px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(255, 107, 107, 0.06);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -73,8 +73,8 @@ button {
 }
 
 ::selection {
-  color: #f8f2e7;
-  background: #176b63;
+  color: #0A0F29;
+  background: #FF6B6B;
 }
 
 @media (prefers-reduced-motion: reduce) {

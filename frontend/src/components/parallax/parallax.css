@@ -37,8 +37,8 @@
   height: 620px;
   background: radial-gradient(
     circle,
-    rgba(23, 107, 99, 0.2) 0%,
-    rgba(196, 248, 42, 0.14) 45%,
+    rgba(255, 107, 107, 0.24) 0%,
+    rgba(255, 107, 107, 0.08) 45%,
     transparent 70%
   );
 }
@@ -50,8 +50,8 @@
   height: 720px;
   background: radial-gradient(
     circle,
-    rgba(56, 189, 248, 0.16) 0%,
-    rgba(99, 102, 241, 0.1) 45%,
+    rgba(78, 101, 255, 0.22) 0%,
+    rgba(10, 15, 41, 0.12) 45%,
     transparent 70%
   );
 }
@@ -63,8 +63,8 @@
   height: 580px;
   background: radial-gradient(
     circle,
-    rgba(199, 161, 105, 0.18) 0%,
-    rgba(234, 179, 8, 0.1) 45%,
+    rgba(255, 107, 107, 0.16) 0%,
+    rgba(138, 43, 226, 0.12) 45%,
     transparent 70%
   );
 }
@@ -115,16 +115,16 @@
 .parallax-glyph {
   position: absolute;
   padding: 7px 16px;
-  color: var(--lime);
-  background: rgba(20, 20, 24, 0.78);
-  border: 1px solid rgba(196, 248, 42, 0.28);
+  color: #FF6B6B;
+  background: rgba(16, 23, 61, 0.88);
+  border: 1px solid rgba(255, 107, 107, 0.35);
   border-radius: 9999px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-weight: 700;
   letter-spacing: 0.6px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 18px rgba(196, 248, 42, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 107, 107, 0.2);
   transition: transform 120ms ease-out;
   pointer-events: none;
   z-index: 1;
@@ -132,7 +132,7 @@
 
 .parallax-glyph span {
   display: inline-block;
-  text-shadow: 0 0 14px rgba(196, 248, 42, 0.5);
+  text-shadow: 0 0 14px rgba(255, 107, 107, 0.6);
 }
 
 /* 3D Tilt Cards */
