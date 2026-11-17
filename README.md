@@ -46,19 +46,34 @@ Aplikasi ini mengintegrasikan sistem autentikasi pengguna, manajemen profil leng
 
 ## Tumpukan Teknologi
 
-### Frontend
+### Frontend Development
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=react,ts,vite,tailwind" alt="Frontend Tech Stack" />
+  <img src="https://skillicons.dev/icons?i=react,ts,vite,tailwind" alt="Frontend Development Stack" />
 </p>
 
-### Backend
+### Backend Development
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=nodejs,express,ts,prisma" alt="Backend Tech Stack" />
+  <img src="https://skillicons.dev/icons?i=nodejs,express,ts,prisma" alt="Backend Development Stack" />
 </p>
 
-### Database dan Infrastruktur
+### Desain UI UX
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=postgres,docker" alt="Database dan Infrastruktur Stack" />
+  <img src="https://skillicons.dev/icons?i=figma,tailwind,css" alt="UI UX Design Stack" />
+</p>
+
+### Quality Assurance
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=vitest,postman" alt="Quality Assurance Stack" />
+</p>
+
+### DevOps dan Otomasi
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=docker,githubactions,nginx" alt="DevOps and Automation Stack" />
+</p>
+
+### Arsitektur Database
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=postgres,prisma" alt="Database Architecture Stack" />
 </p>
 
 ## Struktur Direktori Monorepo
