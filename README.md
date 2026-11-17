@@ -47,27 +47,19 @@ Aplikasi ini mengintegrasikan sistem autentikasi pengguna, manajemen profil leng
 ## Tumpukan Teknologi
 
 ### Frontend
-* React 19
-* TypeScript
-* Vite
-* Tailwind CSS v4
-* React Router v7
-* Lucide React
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=react,ts,vite,tailwind" alt="Frontend Tech Stack" />
+</p>
 
 ### Backend
-* Node.js
-* Express 5
-* TypeScript
-* Prisma ORM 6
-* JSON Web Token (JWT)
-* Bcrypt.js
-* Multer
-* Express Rate Limit
-* Resend SDK
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=nodejs,express,ts,prisma" alt="Backend Tech Stack" />
+</p>
 
 ### Database dan Infrastruktur
-* PostgreSQL
-* Docker
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=postgres,docker" alt="Database dan Infrastruktur Stack" />
+</p>
 
 ## Struktur Direktori Monorepo
 
