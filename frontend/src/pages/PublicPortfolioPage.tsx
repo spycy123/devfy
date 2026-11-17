@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowUpRight,
+  Check,
   Code2,
+  Copy,
   ExternalLink,
   Globe,
   LoaderCircle,
@@ -46,6 +48,7 @@ function PublicPortfolioPage() {
   const [user, setUser] = useState<PublicUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -81,11 +84,19 @@ function PublicPortfolioPage() {
     }
   }, [username])
 
+  function handleCopyShareLink() {
+    void navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   if (loading) {
     return (
       <main className="public-state" role="status" aria-live="polite">
         <LoaderCircle className="loading-icon" size={32} />
-        <p>Memuat portofolio...</p>
+        <p style={{ marginTop: '16px', color: 'var(--muted)', fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
+          Memuat portofolio developer...
+        </p>
       </main>
     )
   }
@@ -96,8 +107,10 @@ function PublicPortfolioPage() {
         <div className="public-state-icon">
           <Code2 size={30} />
         </div>
-        <h1>Portofolio tidak ditemukan</h1>
-        <p>{error || 'Profil yang lu cari belum tersedia.'}</p>
+        <h1 style={{ fontSize: '24px', fontWeight: 800 }}>Portofolio tidak ditemukan</h1>
+        <p style={{ color: 'var(--muted)', maxWidth: '420px', lineHeight: 1.6 }}>
+          {error || 'Profil yang kamu cari belum tersedia atau diset ke privat.'}
+        </p>
         <Link className="public-back-link" to="/">
           <ArrowLeft size={16} /> Kembali ke Devfy
         </Link>
@@ -116,21 +129,37 @@ function PublicPortfolioPage() {
           devfy<span className="public-brand-dot">.</span>
         </Link>
 
-        <Link className="public-nav-link" to="/">
-          Dibuat dengan Devfy <ArrowUpRight size={15} />
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button
+            type="button"
+            className="public-nav-link"
+            onClick={handleCopyShareLink}
+            style={{ cursor: 'pointer' }}
+          >
+            {copied ? <Check size={14} color="#00F5A0" /> : <Copy size={14} />}
+            <span>{copied ? 'Tersalin!' : 'Bagikan'}</span>
+          </button>
+
+          <Link className="public-nav-link" to="/">
+            Dibuat dengan Devfy <ArrowUpRight size={14} />
+          </Link>
+        </div>
       </nav>
 
       <ParallaxContainer className="public-hero">
         <div className="public-eyebrow">
           <span className="public-status-dot" />
-          DEVELOPER PORTFOLIO
+          <span>DEVELOPER PORTFOLIO</span>
         </div>
 
-        {user.avatarUrl && (
+        {user.avatarUrl ? (
           <ParallaxLayer depth={12} scrollSpeed={-0.06}>
-            <img className="public-avatar" src={user.avatarUrl} alt="" />
+            <img className="public-avatar" src={user.avatarUrl} alt={user.name} />
           </ParallaxLayer>
+        ) : (
+          <div className="public-avatar public-avatar-placeholder">
+            {user.name.charAt(0).toUpperCase()}
+          </div>
         )}
 
         <h1>
@@ -140,11 +169,13 @@ function PublicPortfolioPage() {
         <p className="public-username">@{user.username}</p>
 
         <p className="public-bio">
-          {user.bio || 'Seorang developer yang sedang membangun sesuatu yang keren.'}
+          {user.bio || 'Seorang software developer yang sedang membangun sesuatu yang bermanfaat.'}
         </p>
 
         {user.location && (
-          <p className="public-location"><MapPin size={16} /> {user.location}</p>
+          <p className="public-location">
+            <MapPin size={15} color="var(--accent)" /> {user.location}
+          </p>
         )}
 
         <div className="public-socials">
@@ -155,7 +186,7 @@ function PublicPortfolioPage() {
               target="_blank"
               rel="noreferrer"
             >
-              <Code2 size={17} /> GitHub <ArrowUpRight size={14} />
+              <Code2 size={16} /> GitHub <ArrowUpRight size={14} />
             </a>
           )}
 
@@ -166,7 +197,7 @@ function PublicPortfolioPage() {
               target="_blank"
               rel="noreferrer"
             >
-              <Code2 size={17} /> LinkedIn <ArrowUpRight size={14} />
+              <Globe size={16} /> LinkedIn <ArrowUpRight size={14} />
             </a>
           )}
 
@@ -177,7 +208,7 @@ function PublicPortfolioPage() {
               target="_blank"
               rel="noreferrer"
             >
-              <Globe size={17} /> Website <ArrowUpRight size={14} />
+              <ExternalLink size={16} /> Website <ArrowUpRight size={14} />
             </a>
           )}
         </div>
@@ -193,7 +224,7 @@ function PublicPortfolioPage() {
           <div className="public-skills">
             {user.skills.map((skill) => (
               <span className="public-skill" key={skill}>
-                <Code2 size={14} /> {skill}
+                <Code2 size={13} color="var(--accent)" /> {skill}
               </span>
             ))}
           </div>
@@ -215,8 +246,8 @@ function PublicPortfolioPage() {
         {user.projects.length === 0 ? (
           <div className="public-empty">
             <Code2 size={28} />
-            <h3>Belum ada proyek</h3>
-            <p>Proyek yang dipublikasikan akan muncul di sini.</p>
+            <h3>Belum ada proyek publik</h3>
+            <p>Proyek yang dipublikasikan oleh developer ini akan tampil di sini.</p>
           </div>
         ) : (
           <div className="public-project-grid">
@@ -226,7 +257,7 @@ function PublicPortfolioPage() {
                   <span className="public-project-number">
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <Code2 size={20} />
+                  <Code2 size={18} />
                 </div>
 
                 {project.thumbnailUrl && (
@@ -252,27 +283,31 @@ function PublicPortfolioPage() {
 
                 <div className="public-project-links">
                   <Link
+                    className="public-project-link"
                     to={`/u/${encodeURIComponent(user.username)}/projects/${encodeURIComponent(project.slug)}`}
                   >
-                    Project details <ArrowUpRight size={15} />
+                    Detail Proyek <ArrowUpRight size={14} />
                   </Link>
+
                   {project.demoUrl && (
                     <a
+                      className="public-project-link"
                       href={project.demoUrl}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      Live Demo <ArrowUpRight size={15} />
+                      Demo <ArrowUpRight size={14} />
                     </a>
                   )}
 
                   {project.repositoryUrl && (
                     <a
+                      className="public-project-link"
                       href={project.repositoryUrl}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      Source Code <ExternalLink size={14} />
+                      Source <ExternalLink size={13} />
                     </a>
                   )}
                 </div>
@@ -282,9 +317,13 @@ function PublicPortfolioPage() {
         )}
       </section>
 
-      <footer className="public-footer">
-        <span>© {new Date().getFullYear()} {user.name}</span>
-        <span>Built with <strong>devfy.</strong></span>
+      <footer className="footer" style={{ marginTop: '80px', borderTop: '1px solid var(--border)' }}>
+        <div className="footer-bottom section-container" style={{ borderTop: 'none', paddingTop: 0 }}>
+          <span>© {new Date().getFullYear()} {user.name}</span>
+          <span>
+            BUILT WITH <strong style={{ color: 'var(--accent)' }}>devfy.</strong>
+          </span>
+        </div>
       </footer>
     </main>
   )

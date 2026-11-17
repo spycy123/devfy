@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import {
   ArrowDownRight,
@@ -6,10 +5,13 @@ import {
   ArrowUpRight,
   Check,
   Code2,
+  Copy,
+  FileCode,
   Globe,
   Layers3,
   Menu,
   Sparkles,
+  Terminal,
   X,
 } from 'lucide-react'
 import {
@@ -24,35 +26,51 @@ const features = [
   {
     number: '01',
     icon: Code2,
+    badge: 'IDENTITY',
     title: 'Your developer profile',
     description:
-      'Tell your story, show your skills, and make it easy for people to know what you do.',
+      'Tell your story, show your skills, and make it easy for recruiters and collaborators to know what you build.',
   },
   {
     number: '02',
     icon: Layers3,
+    badge: 'SHOWCASE',
     title: 'Projects that matter',
     description:
-      'Collect your best work in one place, complete with your tech stack and project links.',
+      'Collect your best work in one place, complete with your tech stack, live demos, and GitHub repository links.',
   },
   {
     number: '03',
     icon: Globe,
+    badge: 'SHARE',
     title: 'One link. Your portfolio.',
     description:
-      'Publish a portfolio you can share with recruiters, collaborators, and the world.',
+      'Publish a fast, responsive, and recruiter-ready portfolio at devfy.io/u/:username in seconds.',
   },
 ]
 
 const steps = [
-  'Create your developer profile',
-  'Add projects you are proud of',
-  'Publish and share your portfolio',
+  {
+    title: 'Create your developer profile',
+    description: 'Set up your bio, skills tags, location, and social links in under 2 minutes.',
+  },
+  {
+    title: 'Add projects you are proud of',
+    description: 'Document your tech stack, upload screenshots, and connect your live demo and GitHub repo.',
+  },
+  {
+    title: 'Publish and share with the world',
+    description: 'Toggle your portfolio to public and drop your custom link on your resume and LinkedIn.',
+  },
 ]
 
-function App() {
+type ActiveTab = 'ts' | 'json' | 'preview'
+
+export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [email, setEmail] = useState('')
+  const [activeTab, setActiveTab] = useState<ActiveTab>('ts')
+  const [copied, setCopied] = useState(false)
 
   function closeMenu() {
     setMenuOpen(false)
@@ -66,6 +84,28 @@ function App() {
     window.location.href = `mailto:syafiinurradha@gmail.com?subject=${encodeURIComponent(
       'Hello Devfy',
     )}&body=${encodeURIComponent(`Hi, I am interested in Devfy.\nMy email: ${email}`)}`
+  }
+
+  function handleCopySnippet() {
+    const snippet =
+      activeTab === 'ts'
+        ? `const developer: Developer = {\n  name: 'Alex Pratama',\n  role: 'Full Stack Engineer',\n  skills: ['React 19', 'TypeScript', 'Node.js', 'PostgreSQL'],\n  portfolio: 'https://devfy.io/u/alex'\n}`
+        : JSON.stringify(
+            {
+              username: 'alex.dev',
+              projects: [
+                { title: 'Devfy Platform', status: 'PUBLISHED' },
+                { title: 'Realtime AI Assistant', status: 'PUBLISHED' },
+              ],
+              verified: true,
+            },
+            null,
+            2,
+          )
+
+    void navigator.clipboard.writeText(snippet)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
@@ -125,7 +165,7 @@ function App() {
           <div className="hero-copy">
             <div className="eyebrow">
               <span className="status-dot" />
-              YOUR WORK, YOUR STORY
+              <span>DEVFY CLI v2.4 • OPEN TO ALL DEVELOPERS</span>
             </div>
 
             <h1>
@@ -136,23 +176,23 @@ function App() {
 
             <p className="hero-description">
               A home for everything you build. Bring your developer profile,
-              projects, and portfolio together in one simple place.
+              projects, and portfolio together in one blazing fast, recruiter-ready place.
             </p>
 
             <div className="hero-actions">
-              <a className="button button-primary" href="#features">
-                Explore Devfy <ArrowUpRight size={17} />
+              <a className="button button-primary" href="/register">
+                Buat Portofolio Gratis <ArrowUpRight size={17} />
               </a>
-              <a className="button button-secondary" href="#how-it-works">
-                How it works <ArrowDownRight size={17} />
+              <a className="button button-secondary" href="#features">
+                Explore Features <ArrowDownRight size={17} />
               </a>
             </div>
 
             <div className="hero-note">
               <span className="note-icon">
-                <Check size={14} />
+                <Check size={12} strokeWidth={3} />
               </span>
-              Built for students and aspiring developers
+              <span>Built for students and aspiring engineers • 100% Free</span>
             </div>
           </div>
 
@@ -164,76 +204,205 @@ function App() {
               <div className="visual-glow" />
             </ParallaxLayer>
 
-            <TiltCard className="code-window" maxTilt={6} glare={true} scale={1.01}>
+            <TiltCard className="code-window" maxTilt={5} glare={true} scale={1.01}>
               <div className="window-topbar">
                 <div className="window-dots">
                   <i />
                   <i />
                   <i />
                 </div>
-                <span>developer.ts</span>
-                <Code2 size={15} />
+
+                <div className="window-tabs">
+                  <button
+                    type="button"
+                    className={`window-tab-btn ${activeTab === 'ts' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('ts')}
+                  >
+                    <FileCode size={13} /> developer.ts
+                  </button>
+                  <button
+                    type="button"
+                    className={`window-tab-btn ${activeTab === 'json' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('json')}
+                  >
+                    <Terminal size={13} /> portfolio.json
+                  </button>
+                  <button
+                    type="button"
+                    className={`window-tab-btn ${activeTab === 'preview' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('preview')}
+                  >
+                    <Globe size={13} /> Preview ⚡
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className={`window-copy-btn ${copied ? 'copied' : ''}`}
+                  onClick={handleCopySnippet}
+                  title="Copy code snippet"
+                >
+                  {copied ? <Check size={12} /> : <Copy size={12} />}
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
               </div>
 
               <div className="code-content">
-                <div className="code-line">
-                  <span className="line-number">01</span>
-                  <span>
-                    <span className="code-purple">const</span> developer = {'{'}
-                  </span>
-                </div>
-                <div className="code-line">
-                  <span className="line-number">02</span>
-                  <span className="indent">
-                    <span className="code-blue">name</span>:{' '}
-                    <span className="code-green">'Your Name'</span>,
-                  </span>
-                </div>
-                <div className="code-line">
-                  <span className="line-number">03</span>
-                  <span className="indent">
-                    <span className="code-blue">role</span>:{' '}
-                    <span className="code-green">'Developer'</span>,
-                  </span>
-                </div>
-                <div className="code-line">
-                  <span className="line-number">04</span>
-                  <span className="indent">
-                    <span className="code-blue">building</span>:{' '}
-                    <span className="code-green">'Cool stuff'</span>,
-                  </span>
-                </div>
-                <div className="code-line">
-                  <span className="line-number">05</span>
-                  <span className="indent">
-                    <span className="code-blue">portfolio</span>:{' '}
-                    <span className="code-green">true</span>,
-                  </span>
-                </div>
-                <div className="code-line">
-                  <span className="line-number">06</span>
-                  <span>{'}'}</span>
-                </div>
+                {activeTab === 'ts' && (
+                  <>
+                    <div className="code-line">
+                      <span className="line-number">01</span>
+                      <span>
+                        <span className="code-purple">const</span> developer: Developer = {'{'}
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">02</span>
+                      <span className="indent">
+                        <span className="code-blue">name</span>:{' '}
+                        <span className="code-green">'Alex Pratama'</span>,
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">03</span>
+                      <span className="indent">
+                        <span className="code-blue">role</span>:{' '}
+                        <span className="code-green">'Full Stack Engineer'</span>,
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">04</span>
+                      <span className="indent">
+                        <span className="code-blue">skills</span>: [
+                        <span className="code-green">'React'</span>,{' '}
+                        <span className="code-green">'TypeScript'</span>,{' '}
+                        <span className="code-green">'Postgres'</span>],
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">05</span>
+                      <span className="indent">
+                        <span className="code-blue">portfolio</span>:{' '}
+                        <span className="code-amber">'https://devfy.io/u/alex'</span>,
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">06</span>
+                      <span className="indent">
+                        <span className="code-blue">openToWork</span>:{' '}
+                        <span className="code-purple">true</span>
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">07</span>
+                      <span>{'}'}</span>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'json' && (
+                  <>
+                    <div className="code-line">
+                      <span className="line-number">01</span>
+                      <span>{'{'}</span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">02</span>
+                      <span className="indent">
+                        <span className="code-blue">"username"</span>:{' '}
+                        <span className="code-green">"alex.dev"</span>,
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">03</span>
+                      <span className="indent">
+                        <span className="code-blue">"status"</span>:{' '}
+                        <span className="code-green">"PUBLISHED"</span>,
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">04</span>
+                      <span className="indent">
+                        <span className="code-blue">"projects"</span>: [{' '}
+                        <span className="code-amber">"Devfy"</span>,{' '}
+                        <span className="code-amber">"AI Assistant"</span> ],
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">05</span>
+                      <span className="indent">
+                        <span className="code-blue">"verified"</span>:{' '}
+                        <span className="code-purple">true</span>
+                      </span>
+                    </div>
+                    <div className="code-line">
+                      <span className="line-number">06</span>
+                      <span>{'}'}</span>
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'preview' && (
+                  <div className="window-preview-card">
+                    <div className="window-preview-header">
+                      <div className="window-preview-user">
+                        <div className="window-preview-avatar">AP</div>
+                        <div>
+                          <strong style={{ display: 'block', fontSize: '13px', color: '#FFF' }}>
+                            Alex Pratama
+                          </strong>
+                          <span style={{ fontSize: '11px', color: '#00F5A0', fontFamily: 'var(--font-mono)' }}>
+                            @alex.dev
+                          </span>
+                        </div>
+                      </div>
+                      <span className="window-preview-badge">
+                        <span className="status-dot" /> Open to work
+                      </span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '12px', color: '#94A3B8' }}>
+                      Building distributed web systems & modern UI with React & Node.js.
+                    </p>
+                    <div className="window-preview-projects">
+                      <span className="window-preview-pill">✦ Devfy Platform</span>
+                      <span className="window-preview-pill">✦ AI Assistant</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="window-footer">
                 <span>
-                  <span className="status-dot" /> All systems ready
+                  <span className="status-dot" /> All systems operational
                 </span>
-                <span>TypeScript</span>
+                <span>TypeScript 5.8 • devfy.io</span>
               </div>
             </TiltCard>
 
             <ParallaxLayer
               className="floating-card floating-card-profile"
-              depth={22}
-              scrollSpeed={-0.12}
+              depth={20}
+              scrollSpeed={-0.1}
               rotate={2}
             >
-              <div className="avatar">D</div>
+              <div className="avatar">AP</div>
               <div>
-                <strong>Your next chapter.</strong>
-                <span>Developer portfolio</span>
+                <strong>Alex Pratama</strong>
+                <span>@alex.dev • Active</span>
+                <div className="mini-heat-grid">
+                  <span className="heat-cell l1" />
+                  <span className="heat-cell l2" />
+                  <span className="heat-cell l3" />
+                  <span className="heat-cell l2" />
+                  <span className="heat-cell l1" />
+                  <span className="heat-cell l3" />
+                  <span className="heat-cell l2" />
+                  <span className="heat-cell l3" />
+                  <span className="heat-cell l1" />
+                  <span className="heat-cell l2" />
+                  <span className="heat-cell l3" />
+                  <span className="heat-cell l2" />
+                </div>
               </div>
               <Sparkles size={17} className="floating-sparkle" />
             </ParallaxLayer>
@@ -241,15 +410,15 @@ function App() {
             <ParallaxLayer
               className="floating-card floating-card-stack"
               depth={-18}
-              scrollSpeed={0.14}
+              scrollSpeed={0.12}
               rotate={-2}
             >
               <span className="stack-icon">
                 <Layers3 size={17} />
               </span>
               <div>
-                <strong>Your projects</strong>
-                <span>One home for your work</span>
+                <strong>Curated Stack</strong>
+                <span>React 19 • TS • Postgres</span>
               </div>
             </ParallaxLayer>
           </ParallaxContainer>
@@ -268,19 +437,33 @@ function App() {
               </h2>
             </div>
             <p>
-              Your skills deserve more than a scattered collection of links.
-              Devfy helps you bring your developer journey together.
+              Your skills deserve more than a scattered collection of links and READMEs.
+              Devfy gives your developer journey an authoritative, beautifully engineered showcase.
             </p>
           </div>
 
           <div className="feature-grid">
-            {features.map(({ number, icon: Icon, title, description }) => (
+            {features.map(({ number, icon: Icon, badge, title, description }) => (
               <TiltCard as="article" className="feature-card" key={number} maxTilt={5} glare={true}>
                 <div className="feature-card-top">
                   <span className="feature-icon">
                     <Icon size={21} />
                   </span>
-                  <span className="feature-number">{number}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{
+                      fontSize: '10px',
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--accent)',
+                      background: 'var(--accent-soft)',
+                      padding: '2px 7px',
+                      borderRadius: '4px',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em'
+                    }}>
+                      {badge}
+                    </span>
+                    <span className="feature-number">{number}</span>
+                  </div>
                 </div>
                 <h3>{title}</h3>
                 <p>{description}</p>
@@ -304,29 +487,21 @@ function App() {
                 to <span className="heading-accent">your own space.</span>
               </h2>
               <p>
-                No need to build a portfolio website from scratch. Focus on
-                your work; let Devfy help you present it.
+                Skip the weeks of building portfolio templates and debugging CSS. Focus on
+                building extraordinary software — let Devfy present it with distinction.
               </p>
-              <a className="button button-primary" href="#contact">
-                Let&apos;s connect <ArrowUpRight size={17} />
+              <a className="button button-primary" href="/register">
+                Mulai Sekarang <ArrowUpRight size={17} />
               </a>
             </div>
 
             <div className="workflow-steps">
               {steps.map((step, index) => (
-                <TiltCard className="workflow-step" key={step} maxTilt={3} glare={false}>
+                <TiltCard className="workflow-step" key={step.title} maxTilt={3} glare={false}>
                   <span className="step-number">0{index + 1}</span>
                   <div>
-                    <h3>{step}</h3>
-                    <p>
-                      {
-                        [
-                          'Set up your identity and developer links.',
-                          'Show what you have learned and created.',
-                          'Give your work a home on the web.',
-                        ][index]
-                      }
-                    </p>
+                    <h3>{step.title}</h3>
+                    <p>{step.description}</p>
                   </div>
                   <Check className="step-check" size={18} />
                 </TiltCard>
@@ -337,7 +512,7 @@ function App() {
 
         <section className="about section-container" id="about">
           <div className="about-symbol">
-            <Code2 size={36} />
+            <Code2 size={34} />
           </div>
           <div className="about-copy">
             <div className="eyebrow">
@@ -349,18 +524,17 @@ function App() {
               <span className="heading-accent">not just the destination.</span>
             </h2>
             <p>
-              Every developer starts somewhere. Devfy is being built to help
-              students and beginner developers document their progress,
-              showcase their projects, and make their next opportunity easier
-              to find.
+              Every senior engineer was once a beginner debugging their first project.
+              Devfy was designed specifically to help students and aspiring developers
+              document their craft, build public proof of work, and stand out in job applications.
             </p>
           </div>
-          <TiltCard className="about-aside" maxTilt={5} glare={true} scrollSpeed={-0.03}>
+          <TiltCard className="about-aside" maxTilt={4} glare={true} scrollSpeed={-0.03}>
             <span className="aside-quote">&ldquo;</span>
             <p>
-              Your next opportunity might start with something you built today.
+              Your next career breakthrough might start with something you shipped this weekend.
             </p>
-            <span className="aside-signature">THE DEVFY IDEA</span>
+            <span className="aside-signature">THE DEVFY MANIFESTO</span>
           </TiltCard>
         </section>
 
@@ -376,8 +550,8 @@ function App() {
                 something <span className="heading-accent">meaningful.</span>
               </h2>
               <p>
-                Have an idea, a suggestion, or just want to say hello? I&apos;d
-                love to hear from you.
+                Have an idea, a feature request, or want to collaborate? Reach out
+                directly to the founder.
               </p>
               <a
                 className="button button-primary"
@@ -392,7 +566,7 @@ function App() {
               <input
                 id="contact-email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="developer@example.com"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
@@ -401,9 +575,9 @@ function App() {
                 className="button button-primary form-submit"
                 type="submit"
               >
-                Contact Devfy <ArrowUpRight size={17} />
+                Connect with Devfy <ArrowUpRight size={17} />
               </button>
-              <p>This opens your email app with a pre-filled message.</p>
+              <p>Opens your default mail client with a pre-filled subject.</p>
             </form>
           </TiltCard>
         </section>
@@ -420,7 +594,9 @@ function App() {
             </span>
           </a>
 
-          <p>Made for developers who are just getting started.</p>
+          <p style={{ margin: 0, color: 'var(--muted)', fontSize: '14px' }}>
+            Made with craft for developers everywhere.
+          </p>
 
           <div className="footer-links">
             <a
@@ -449,5 +625,3 @@ function App() {
     </div>
   )
 }
-
-export default App

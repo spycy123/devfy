@@ -1,4 +1,4 @@
-/* Parallax System Styles */
+/* Parallax System Styles - Anti-Slop Engineered Atmosphere */
 
 .parallax-container {
   transform-style: preserve-3d;
@@ -25,106 +25,112 @@
 .parallax-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(85px);
+  filter: blur(100px);
   pointer-events: none;
-  opacity: 0.95;
+  opacity: 0.75;
 }
 
+/* Primary Orb: Electric Terminal Mint / Emerald */
 .parallax-orb-primary {
-  top: -8%;
-  left: 12%;
+  top: -12%;
+  left: 15%;
+  width: 680px;
+  height: 680px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 245, 160, 0.16) 0%,
+    rgba(0, 245, 160, 0.04) 45%,
+    transparent 70%
+  );
+}
+
+/* Accent Orb: Cyber Cyan / Soft Blue */
+.parallax-orb-accent {
+  top: 38%;
+  right: -8%;
+  width: 760px;
+  height: 760px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 210, 255, 0.14) 0%,
+    rgba(14, 19, 31, 0.08) 50%,
+    transparent 72%
+  );
+}
+
+/* Secondary Orb: Deep Space Indigo / Violet */
+.parallax-orb-secondary {
+  bottom: 0%;
+  left: -5%;
   width: 620px;
   height: 620px;
   background: radial-gradient(
     circle,
-    rgba(255, 107, 107, 0.24) 0%,
-    rgba(255, 107, 107, 0.08) 45%,
-    transparent 70%
-  );
-}
-
-.parallax-orb-accent {
-  top: 40%;
-  right: -6%;
-  width: 720px;
-  height: 720px;
-  background: radial-gradient(
-    circle,
-    rgba(78, 101, 255, 0.22) 0%,
-    rgba(10, 15, 41, 0.12) 45%,
-    transparent 70%
-  );
-}
-
-.parallax-orb-secondary {
-  bottom: 2%;
-  left: -6%;
-  width: 580px;
-  height: 580px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 107, 107, 0.16) 0%,
-    rgba(138, 43, 226, 0.12) 45%,
+    rgba(139, 92, 246, 0.12) 0%,
+    rgba(8, 11, 17, 0.05) 50%,
     transparent 70%
   );
 }
 
 /* Auth Backdrop adjustments */
 .parallax-backdrop-auth .parallax-orb-primary {
-  top: 8%;
-  left: 28%;
-  width: 540px;
-  height: 540px;
-  opacity: 1;
-}
-
-.parallax-backdrop-auth .parallax-orb-accent {
-  bottom: 8%;
-  right: 22%;
-  width: 480px;
-  height: 480px;
-}
-
-/* Dashboard Backdrop adjustments */
-.parallax-backdrop-dashboard .parallax-orb-primary {
-  top: -4%;
-  right: 8%;
+  top: 6%;
+  left: 25%;
   width: 580px;
   height: 580px;
   opacity: 0.85;
 }
 
-.parallax-backdrop-dashboard .parallax-orb-accent {
-  top: 45%;
-  left: 18%;
-  width: 640px;
-  height: 640px;
+.parallax-backdrop-auth .parallax-orb-accent {
+  bottom: 6%;
+  right: 20%;
+  width: 520px;
+  height: 520px;
+}
+
+/* Dashboard Backdrop adjustments */
+.parallax-backdrop-dashboard .parallax-orb-primary {
+  top: -6%;
+  right: 6%;
+  width: 620px;
+  height: 620px;
   opacity: 0.75;
+}
+
+.parallax-backdrop-dashboard .parallax-orb-accent {
+  top: 42%;
+  left: 15%;
+  width: 660px;
+  height: 660px;
+  opacity: 0.65;
 }
 
 /* Public Portfolio adjustments */
 .parallax-backdrop-portfolio .parallax-orb-primary {
-  top: -4%;
-  left: 18%;
-  width: 660px;
-  height: 660px;
-  opacity: 0.9;
+  top: -5%;
+  left: 20%;
+  width: 700px;
+  height: 700px;
+  opacity: 0.8;
 }
 
-/* Floating Developer Glyphs */
+/* Floating Developer Glyphs (Sleek Monospace Badges) */
 .parallax-glyph {
   position: absolute;
-  padding: 7px 16px;
-  color: #FF6B6B;
-  background: rgba(16, 23, 61, 0.88);
-  border: 1px solid rgba(255, 107, 107, 0.35);
+  padding: 6px 14px;
+  color: #00F5A0;
+  background: rgba(14, 19, 31, 0.75);
+  border: 1px solid rgba(0, 245, 160, 0.28);
   border-radius: 9999px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 107, 107, 0.2);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.5), 
+    0 0 14px rgba(0, 245, 160, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: transform 120ms ease-out;
   pointer-events: none;
   z-index: 1;
@@ -132,7 +138,7 @@
 
 .parallax-glyph span {
   display: inline-block;
-  text-shadow: 0 0 14px rgba(255, 107, 107, 0.6);
+  text-shadow: 0 0 12px rgba(0, 245, 160, 0.5);
 }
 
 /* 3D Tilt Cards */
@@ -162,10 +168,10 @@
   }
 
   .parallax-orb {
-    filter: blur(60px);
+    filter: blur(70px);
     width: 320px !important;
     height: 320px !important;
-    opacity: 0.6;
+    opacity: 0.5;
   }
 }
 

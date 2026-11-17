@@ -1,22 +1,63 @@
-
 @import "tailwindcss";
 
 :root {
-  font-family: ui-rounded, "Avenir Next", "Segoe UI", sans-serif;
-  color: #F7F8FD;
-  background: #0A0F29;
+  /* Developer-grade Typography */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-family: var(--font-sans);
+  
+  /* Color Scheme & Palette */
   color-scheme: dark;
-  --bg: #0A0F29;
-  --surface: #10173D;
-  --surface-light: #151E4B;
-  --border: rgba(255, 107, 107, 0.18);
-  --text: #F7F8FD;
-  --muted: #9AA5CE;
-  --lime: #FF6B6B;
-  --lime-soft: rgba(255, 107, 107, 0.12);
-  --warm-shadow:
-    0 14px 40px rgba(0, 0, 0, 0.5),
-    0 0 15px rgba(255, 107, 107, 0.06);
+  --bg: #080B11;
+  --bg-subtle: #0B0F17;
+  --surface: #0E131F;
+  --surface-light: #131826;
+  --surface-raised: #1A2133;
+  --surface-glass: rgba(14, 19, 31, 0.78);
+  
+  /* Text */
+  --text: #F3F4F6;
+  --text-bright: #FFFFFF;
+  --muted: #94A3B8;
+  --muted-soft: #64748B;
+  
+  /* Signature Developer Accent (Electric Terminal Emerald & Mint) */
+  --accent: #00F5A0;
+  --accent-soft: rgba(0, 245, 160, 0.12);
+  --accent-glow: rgba(0, 245, 160, 0.28);
+  --accent-intense: #00FFB2;
+  
+  /* Backward compatible aliases for components referencing --lime */
+  --lime: #00F5A0;
+  --lime-soft: rgba(0, 245, 160, 0.12);
+  --lime-glow: rgba(0, 245, 160, 0.28);
+  
+  /* Secondary Accents */
+  --cyan: #00D2FF;
+  --cyan-soft: rgba(0, 210, 255, 0.12);
+  --violet: #8B5CF6;
+  --violet-soft: rgba(139, 92, 246, 0.12);
+  --coral: #FF5757;
+  --amber: #F59E0B;
+  
+  /* High Precision Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.05);
+  --border-bright: rgba(255, 255, 255, 0.16);
+  --border-accent: rgba(0, 245, 160, 0.35);
+  
+  /* Elevated Shadow Craft */
+  --card-shadow: 
+    0 1px 1px rgba(0, 0, 0, 0.25),
+    0 8px 24px -6px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --card-shadow-hover: 
+    0 1px 1px rgba(0, 0, 0, 0.3),
+    0 16px 36px -8px rgba(0, 0, 0, 0.65),
+    0 0 25px -5px rgba(0, 245, 160, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --warm-shadow: var(--card-shadow);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -29,19 +70,8 @@
 
 html {
   scroll-behavior: smooth;
-}
-
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition:
-    opacity 600ms ease,
-    transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.scroll-reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+  background: var(--bg);
+  color: var(--text);
 }
 
 body {
@@ -51,11 +81,58 @@ body {
   color: var(--text);
   background: var(--bg);
   line-height: 1.55;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080B11;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 245, 160, 0.35);
+}
+
+/* Selection */
+::selection {
+  color: #080B11;
+  background: #00F5A0;
+}
+
+/* Monospace Utilities */
+code, pre, kbd, samp, .font-mono, .badge-mono, .code-font {
+  font-family: var(--font-mono);
+}
+
+/* Scroll Reveal */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Interactive Elements */
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -72,9 +149,33 @@ button {
   cursor: pointer;
 }
 
-::selection {
-  color: #0A0F29;
-  background: #FF6B6B;
+/* Global Subtle Engineering Grid */
+.bg-grid {
+  background-size: 28px 28px;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+}
+
+/* Pulse Keyframes */
+@keyframes pulseRadar {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 245, 160, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(0, 245, 160, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 245, 160, 0);
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Code2, LoaderCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Code2, Eye, EyeOff, LoaderCircle } from 'lucide-react'
 import { apiRequest } from '../lib/api'
 import { ParallaxBackdrop, TiltCard } from '../components/parallax'
 
@@ -20,6 +20,7 @@ export default function RegisterPage() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -71,7 +72,7 @@ export default function RegisterPage() {
 
         <h1>Buat ruang untuk <span className="heading-accent">karyamu.</span></h1>
         <p className="auth-description">
-          Buat akun Devfy dan kumpulkan proyekmu dalam satu portofolio.
+          Buat akun Devfy dan kumpulkan proyekmu dalam satu portofolio developer.
         </p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -112,17 +113,40 @@ export default function RegisterPage() {
           />
 
           <label htmlFor="register-password">PASSWORD</label>
-          <input
-            id="register-password"
-            type="password"
-            placeholder="Minimal 8 karakter"
-            autoComplete="new-password"
-            minLength={8}
-            maxLength={72}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              id="register-password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Minimal 8 karakter"
+              autoComplete="new-password"
+              minLength={8}
+              maxLength={72}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              style={{ paddingRight: '42px' }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: 'var(--muted)',
+                cursor: 'pointer',
+                display: 'grid',
+                placeItems: 'center',
+                padding: '4px',
+              }}
+              aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
 
           {error && (
             <p role="alert" className="auth-error">{error}</p>
