@@ -1,0 +1,105 @@
+### Devfy API Quality Assurance Test Suite
+### Jalankan menggunakan ekstensi "REST Client" di VS Code atau Cursor
+
+@baseUrl = http://localhost:5000/api
+@testEmail = qa_tester@devfy.local
+@testUsername = qatester
+@testPassword = Password123!
+
+### 1. Health Check
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+### 2. Registrasi Akun Baru
+# @name registerUser
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "QA Specialist",
+  "username": "{{testUsername}}",
+  "email": "{{testEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### 3. Login Akun (Menghasilkan Bearer Token)
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{testEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### Ambil token dari respons login di atas
+@authToken = {{loginUser.response.body.token}}
+
+### 4. Mengambil Profil Pengguna Saat Ini
+GET {{baseUrl}}/profile
+Authorization: Bearer {{authToken}}
+
+### 5. Memperbarui Data Profil dan Keahlian
+PATCH {{baseUrl}}/profile
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "QA Automation Engineer",
+  "bio": "Menguji keandalan sistem, arsitektur REST API, dan pengalaman pengguna end to end.",
+  "location": "Jakarta, Indonesia",
+  "skills": ["Vitest", "Playwright", "Postman", "TypeScript", "Docker"],
+  "githubUrl": "https://github.com/qatester",
+  "portfolioPublished": true
+}
+
+### 6. Menambahkan Proyek Portofolio Baru
+# @name createProject
+POST {{baseUrl}}/projects
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "API Automated Testing Framework",
+  "slug": "api-testing-framework",
+  "description": "Framework otomatisasi pengujian endpoint terdistribusi dengan pelaporan metrik performa real time.",
+  "techStack": ["TypeScript", "Vitest", "Docker", "Node.js"],
+  "repositoryUrl": "https://github.com/qatester/api-testing-framework",
+  "demoUrl": "https://demo.devfy.local",
+  "status": "PUBLISHED"
+}
+
+### Simpan project ID yang baru dibuat
+@projectId = {{createProject.response.body.project.id}}
+
+### 7. Mengambil Daftar Seluruh Proyek Pengguna
+GET {{baseUrl}}/projects
+Authorization: Bearer {{authToken}}
+
+### 8. Memperbarui Status Proyek
+PATCH {{baseUrl}}/projects/{{projectId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "API Automated Testing Framework v2",
+  "status": "PUBLISHED"
+}
+
+### 9. Mengakses Portofolio Publik (Tanpa Autentikasi)
+GET {{baseUrl}}/public/{{testUsername}}
+
+### 10. Mengakses Detail Proyek Publik
+GET {{baseUrl}}/public/{{testUsername}}/projects/api-testing-framework
+
+### 11. Permintaan Pemulihan Kata Sandi (Forgot Password)
+POST {{baseUrl}}/auth/password/forgot
+Content-Type: application/json
+
+{
+  "email": "{{testEmail}}"
+}
+
+### 12. Menghapus Proyek
+DELETE {{baseUrl}}/projects/{{projectId}}
+Authorization: Bearer {{authToken}}

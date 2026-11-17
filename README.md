@@ -65,34 +65,14 @@ Aplikasi ini mengintegrasikan sistem autentikasi pengguna, manajemen profil leng
 
 ```
 devfy/
-├── backend/
-│   ├── prisma/
-│   │   ├── migrations/      # Riwayat migrasi database
-│   │   └── schema.prisma    # Definisi skema data dan model Prisma
-│   ├── scripts/             # Utilitas pengecekan koneksi database
-│   ├── src/
-│   │   ├── middleware/      # Middleware autentikasi dan otorisasi
-│   │   ├── routes/          # Handler rute API
-│   │   ├── app.ts           # Konfigurasi aplikasi Express
-│   │   ├── index.ts         # Titik masuk server backend
-│   │   └── prisma.ts        # Klien koneksi Prisma ORM
-│   ├── uploads/             # Direktori penyimpanan file media lokal
-│   ├── .env.example         # Contoh variabel lingkungan backend
-│   └── package.json         # Konfigurasi dependensi backend
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── parallax/    # Sistem komponen dan hook 3D Parallax
-│   │   │   └── ui/          # Komponen antarmuka pengguna
-│   │   ├── lib/             # Klien API terpusat dan helper fungsi
-│   │   ├── pages/           # Komponen halaman aplikasi
-│   │   ├── App.css          # Styling kustom dan token warna
-│   │   ├── App.tsx          # Definisi rute antarmuka
-│   │   ├── index.css        # Konfigurasi Tailwind dan styling root
-│   │   └── main.tsx         # Titik masuk aplikasi frontend
-│   ├── .env.example         # Contoh variabel lingkungan frontend
-│   ├── package.json         # Konfigurasi dependensi frontend
-│   └── vite.config.ts       # Konfigurasi Vite bundler
+├── .github/                 # Alur kerja otomasi CI/CD GitHub Actions
+├── backend/                 # Layanan server Express dan skema Prisma ORM
+├── database/                # Dokumentasi ERD, seed data, dan panduan database
+├── devops/                  # Konfigurasi containerization dan reverse proxy
+├── frontend/                # Aplikasi web React 19 dan antarmuka 3D Parallax
+├── qa/                      # Rangkaian pengujian REST API dan matriks kasus uji
+├── ui-ux/                   # Spesifikasi sistem desain, token warna, dan alur pengguna
+├── docker-compose.yml       # Konfigurasi container PostgreSQL lokal
 ├── DEPLOYMENT.md            # Dokumentasi panduan deployment ke production
 └── README.md                # Dokumentasi utama proyek
 ```

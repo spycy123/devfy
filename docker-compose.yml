@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: devfy_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-devfy_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-omahkucedaksawah}
+      POSTGRES_DB: ${DB_NAME:-devfy_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - devfy_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-devfy_user} -d ${DB_NAME:-devfy_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  devfy_pgdata:
+    name: devfy_pgdata
