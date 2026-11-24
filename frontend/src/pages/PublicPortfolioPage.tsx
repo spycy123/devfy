@@ -16,8 +16,8 @@ import {
   ParallaxBackdrop,
   ParallaxContainer,
   ParallaxLayer,
-  TiltCard,
 } from '../components/parallax'
+import { ScrollWordTitle, MotionCard } from '../components/animation'
 
 interface PublicProject {
   title: string
@@ -162,9 +162,9 @@ function PublicPortfolioPage() {
           </div>
         )}
 
-        <h1>
+        <ScrollWordTitle as="h1">
           Halo, gw <span>{user.name}</span>
-        </h1>
+        </ScrollWordTitle>
 
         <p className="public-username">@{user.username}</p>
 
@@ -252,7 +252,15 @@ function PublicPortfolioPage() {
         ) : (
           <div className="public-project-grid">
             {user.projects.map((project, index) => (
-              <TiltCard as="article" className="public-project-card" key={project.slug} maxTilt={3.5} glare={true}>
+              <MotionCard
+                as="article"
+                className="public-project-card"
+                key={project.slug}
+                delay={index * 0.1}
+                hoverLift={6}
+                hoverScale={1.018}
+                glare={true}
+              >
                 <div className="public-project-top">
                   <span className="public-project-number">
                     {String(index + 1).padStart(2, '0')}
@@ -311,7 +319,7 @@ function PublicPortfolioPage() {
                     </a>
                   )}
                 </div>
-              </TiltCard>
+              </MotionCard>
             ))}
           </div>
         )}

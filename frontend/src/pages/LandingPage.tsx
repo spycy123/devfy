@@ -18,8 +18,8 @@ import {
   ParallaxBackdrop,
   ParallaxContainer,
   ParallaxLayer,
-  TiltCard,
 } from '../components/parallax'
+import { ScrollWordTitle, MotionCard } from '../components/animation'
 import '../App.css'
 
 const features = [
@@ -168,11 +168,11 @@ export default function LandingPage() {
               <span>DEVFY CLI v2.4 • OPEN TO ALL DEVELOPERS</span>
             </div>
 
-            <h1>
+            <ScrollWordTitle as="h1" delay={0.1}>
               Make your work
               <br />
               <span className="heading-accent">speak for itself.</span>
-            </h1>
+            </ScrollWordTitle>
 
             <p className="hero-description">
               A home for everything you build. Bring your developer profile,
@@ -204,7 +204,7 @@ export default function LandingPage() {
               <div className="visual-glow" />
             </ParallaxLayer>
 
-            <TiltCard className="code-window" maxTilt={5} glare={true} scale={1.01}>
+            <MotionCard className="code-window" delay={0.18} hoverLift={5} hoverScale={1.01} glare={true}>
               <div className="window-topbar">
                 <div className="window-dots">
                   <i />
@@ -377,7 +377,7 @@ export default function LandingPage() {
                 </span>
                 <span>TypeScript 5.8 • devfy.io</span>
               </div>
-            </TiltCard>
+            </MotionCard>
 
             <ParallaxLayer
               className="floating-card floating-card-profile"
@@ -430,11 +430,11 @@ export default function LandingPage() {
               <div className="eyebrow">
                 <span className="status-dot" /> WHAT IS DEVFY?
               </div>
-              <h2>
+              <ScrollWordTitle as="h2">
                 Everything you build.
                 <br />
                 <span className="heading-accent">One place to show it.</span>
-              </h2>
+              </ScrollWordTitle>
             </div>
             <p>
               Your skills deserve more than a scattered collection of links and READMEs.
@@ -443,8 +443,16 @@ export default function LandingPage() {
           </div>
 
           <div className="feature-grid">
-            {features.map(({ number, icon: Icon, badge, title, description }) => (
-              <TiltCard as="article" className="feature-card" key={number} maxTilt={5} glare={true}>
+            {features.map(({ number, icon: Icon, badge, title, description }, index) => (
+              <MotionCard
+                as="article"
+                className="feature-card"
+                key={number}
+                delay={index * 0.12}
+                hoverLift={7}
+                hoverScale={1.02}
+                glare={true}
+              >
                 <div className="feature-card-top">
                   <span className="feature-icon">
                     <Icon size={21} />
@@ -470,7 +478,7 @@ export default function LandingPage() {
                 <a href="#how-it-works" className="text-link">
                   Learn more <ArrowRight size={15} />
                 </a>
-              </TiltCard>
+              </MotionCard>
             ))}
           </div>
         </section>
@@ -481,11 +489,11 @@ export default function LandingPage() {
               <div className="eyebrow">
                 <span className="status-dot" /> SIMPLE BY DESIGN
               </div>
-              <h2>
+              <ScrollWordTitle as="h2">
                 From idea
                 <br />
                 to <span className="heading-accent">your own space.</span>
-              </h2>
+              </ScrollWordTitle>
               <p>
                 Skip the weeks of building portfolio templates and debugging CSS. Focus on
                 building extraordinary software — let Devfy present it with distinction.
@@ -497,14 +505,20 @@ export default function LandingPage() {
 
             <div className="workflow-steps">
               {steps.map((step, index) => (
-                <TiltCard className="workflow-step" key={step.title} maxTilt={3} glare={false}>
+                <MotionCard
+                  className="workflow-step"
+                  key={step.title}
+                  delay={index * 0.12}
+                  hoverLift={5}
+                  glare={false}
+                >
                   <span className="step-number">0{index + 1}</span>
                   <div>
                     <h3>{step.title}</h3>
                     <p>{step.description}</p>
                   </div>
                   <Check className="step-check" size={18} />
-                </TiltCard>
+                </MotionCard>
               ))}
             </div>
           </div>
@@ -518,37 +532,37 @@ export default function LandingPage() {
             <div className="eyebrow">
               <span className="status-dot" /> WHY DEVFY?
             </div>
-            <h2>
+            <ScrollWordTitle as="h2">
               Built for the journey,
               <br />
               <span className="heading-accent">not just the destination.</span>
-            </h2>
+            </ScrollWordTitle>
             <p>
               Every senior engineer was once a beginner debugging their first project.
               Devfy was designed specifically to help students and aspiring developers
               document their craft, build public proof of work, and stand out in job applications.
             </p>
           </div>
-          <TiltCard className="about-aside" maxTilt={4} glare={true} scrollSpeed={-0.03}>
+          <MotionCard className="about-aside" delay={0.15} hoverLift={6} glare={true}>
             <span className="aside-quote">&ldquo;</span>
             <p>
               Your next career breakthrough might start with something you shipped this weekend.
             </p>
             <span className="aside-signature">THE DEVFY MANIFESTO</span>
-          </TiltCard>
+          </MotionCard>
         </section>
 
         <section className="contact section-container" id="contact">
-          <TiltCard className="contact-panel" maxTilt={2.5} glare={false}>
+          <MotionCard className="contact-panel" delay={0.15} hoverLift={4} glare={false}>
             <div className="contact-copy">
               <div className="eyebrow">
                 <span className="status-dot" /> HAVE A QUESTION?
               </div>
-              <h2>
+              <ScrollWordTitle as="h2">
                 Let&apos;s build
                 <br />
                 something <span className="heading-accent">meaningful.</span>
-              </h2>
+              </ScrollWordTitle>
               <p>
                 Have an idea, a feature request, or want to collaborate? Reach out
                 directly to the founder.
@@ -579,7 +593,7 @@ export default function LandingPage() {
               </button>
               <p>Opens your default mail client with a pre-filled subject.</p>
             </form>
-          </TiltCard>
+          </MotionCard>
         </section>
       </main>
 

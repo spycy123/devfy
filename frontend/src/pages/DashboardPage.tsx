@@ -27,6 +27,7 @@ import {
   ParallaxLayer,
   TiltCard,
 } from '../components/parallax'
+import { ScrollWordTitle, MotionCard } from '../components/animation'
 
 interface UserProfile {
   id: string
@@ -555,13 +556,13 @@ export default function DashboardPage() {
         )}
 
         <ParallaxContainer className="dashboard-welcome-wrap">
-          <TiltCard className="dashboard-welcome" maxTilt={3.5} glare={true}>
+          <MotionCard className="dashboard-welcome" delay={0.1} hoverLift={4} glare={true}>
             <div>
               <span className="dashboard-welcome-tag">WELCOME TO DEVFY</span>
-              <h2>
+              <ScrollWordTitle as="h2">
                 Build something<br />
                 <span className="heading-accent">worth sharing.</span>
-              </h2>
+              </ScrollWordTitle>
               <p>
                 Halo, {user.name}! Kelola profil, simpan proyek, dan siapkan
                 portofolio developer kamu.
@@ -573,11 +574,11 @@ export default function DashboardPage() {
             <ParallaxLayer depth={24} scrollSpeed={-0.08} rotate={6} className="dashboard-welcome-icon">
               <Code2 size={76} strokeWidth={1.2} />
             </ParallaxLayer>
-          </TiltCard>
+          </MotionCard>
         </ParallaxContainer>
 
         <section className="dashboard-stats">
-          <TiltCard as="article" className="dashboard-stat" maxTilt={4} glare={true}>
+          <MotionCard as="article" className="dashboard-stat" delay={0.08} hoverLift={5} glare={true}>
             <span className="dashboard-stat-icon"><UserRound size={18} /></span>
             <p>PROFILE STATUS</p>
             <h3>{user.bio?.trim() ? 'In progress' : 'Not complete'}</h3>
@@ -586,9 +587,9 @@ export default function DashboardPage() {
                 ? 'Profil kamu sudah memiliki bio'
                 : 'Tambahkan bio untuk melengkapi profil'}
             </span>
-          </TiltCard>
+          </MotionCard>
 
-          <TiltCard as="article" className="dashboard-stat" maxTilt={4} glare={true}>
+          <MotionCard as="article" className="dashboard-stat" delay={0.16} hoverLift={5} glare={true}>
             <span className="dashboard-stat-icon">
               <FolderKanban size={18} />
             </span>
@@ -597,9 +598,9 @@ export default function DashboardPage() {
             <span className="dashboard-stat-note">
               Proyek tersimpan di database
             </span>
-          </TiltCard>
+          </MotionCard>
 
-          <TiltCard as="article" className="dashboard-stat" maxTilt={4} glare={true}>
+          <MotionCard as="article" className="dashboard-stat" delay={0.24} hoverLift={5} glare={true}>
             <span className="dashboard-stat-icon"><Globe size={18} /></span>
             <p>PORTFOLIO</p>
             <h3>{user.portfolioPublished ? 'Published' : 'Unpublished'}</h3>
@@ -608,7 +609,7 @@ export default function DashboardPage() {
                 ? `Portfolio aktif di /u/${user.username}`
                 : 'Publikasikan setelah profil siap'}
             </span>
-          </TiltCard>
+          </MotionCard>
         </section>
 
         <section className="dashboard-projects" id="projects">
@@ -813,8 +814,15 @@ export default function DashboardPage() {
             </TiltCard>
           ) : (
             <div className="dashboard-project-list">
-              {projects.map((project) => (
-                <TiltCard as="article" className="dashboard-project-card" key={project.id} maxTilt={3.5} glare={true}>
+              {projects.map((project, index) => (
+                <MotionCard
+                  as="article"
+                  className="dashboard-project-card"
+                  key={project.id}
+                  delay={index * 0.08}
+                  hoverLift={6}
+                  glare={true}
+                >
                   <div className="project-card-heading">
                     <span className="empty-icon"><Code2 size={22} /></span>
 
@@ -909,7 +917,7 @@ export default function DashboardPage() {
                       </a>
                     )}
                   </div>
-                </TiltCard>
+                </MotionCard>
               ))}
             </div>
           )}

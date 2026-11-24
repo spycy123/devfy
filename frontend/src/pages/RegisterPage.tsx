@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Code2, Eye, EyeOff, LoaderCircle } from 'lucide-react'
 import { apiRequest } from '../lib/api'
-import { ParallaxBackdrop, TiltCard } from '../components/parallax'
+import { ParallaxBackdrop } from '../components/parallax'
+import { ScrollWordTitle, MotionCard } from '../components/animation'
 
 interface RegisterResponse {
   token: string
@@ -58,7 +59,7 @@ export default function RegisterPage() {
         <ArrowLeft size={16} /> Kembali ke beranda
       </Link>
 
-      <TiltCard as="section" className="auth-card" maxTilt={3.5} glare={true} style={{ zIndex: 2 }}>
+      <MotionCard as="section" className="auth-card" delay={0.12} hoverLift={4} glare={true} style={{ zIndex: 2 }}>
         <Link to="/" className="brand auth-brand">
           <span className="brand-mark">
             <Code2 size={21} />
@@ -70,7 +71,7 @@ export default function RegisterPage() {
           <span className="status-dot" /> MULAI PERJALANANMU
         </div>
 
-        <h1>Buat ruang untuk <span className="heading-accent">karyamu.</span></h1>
+        <ScrollWordTitle as="h1">Buat ruang untuk <span className="heading-accent">karyamu.</span></ScrollWordTitle>
         <p className="auth-description">
           Buat akun Devfy dan kumpulkan proyekmu dalam satu portofolio developer.
         </p>
@@ -170,7 +171,7 @@ export default function RegisterPage() {
         <p className="auth-switch">
           Sudah punya akun? <Link to="/login">Masuk</Link>
         </p>
-      </TiltCard>
+      </MotionCard>
     </main>
   )
 }

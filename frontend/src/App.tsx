@@ -11,6 +11,7 @@ import PublicPortfolioPage from './pages/PublicPortfolioPage'
 import PublicProjectPage from './pages/PublicProjectPage'
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
+import { SmoothScroll } from './components/animation'
 
 function ScrollRevealObserver() {
   const location = useLocation()
@@ -71,6 +72,7 @@ function ScrollRevealObserver() {
 function App() {
   return (
     <BrowserRouter>
+      <SmoothScroll />
       <ScrollRevealObserver />
       <Routes>
         <Route path="/" element={<LandingPage />} />
